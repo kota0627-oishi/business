@@ -1,0 +1,13 @@
+{
+  "name": "kintai-card-reader",
+  "version": "1.0.0",
+  "description": "PaSoRi ICカードリーダー WebSocketミドルウェア",
+  "main": "card-reader.js",
+  "scripts": {
+    "start": "node card-reader.js"
+  },
+  "dependencies": {
+    "nfc-pcsc": "^0.8.3",
+    "ws": "^8.18.0"
+  }
+}
