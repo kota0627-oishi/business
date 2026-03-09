@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon 検索順位チェッカー</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+      background: #f0f2f5; color: #1a1a1a; min-height: 100vh;
+    }
+    header {
+      background: #131921; color: #fff;
+      padding: 14px 24px; display: flex; align-items: center; gap: 12px;
+    }
+    header .logo { font-size: 22px; font-weight: 700; color: #FF9900; }
+    header h1 { font-size: 16px; font-weight: 500; color: #ccc; }
+    header .date { margin-left: auto; font-size: 13px; color: #aaa; }
+
+    .tabs { background: #232f3e; display: flex; padding: 0 24px; }
+    .tab-btn {
+      background: none; border: none; color: #ccc;
+      padding: 12px 20px; cursor: pointer; font-size: 14px;
+      border-bottom: 3px solid transparent; transition: all 0.15s;
+    }
+    .tab-btn:hover { color: #fff; }
+    .tab-btn.active { color: #FF9900; border-bottom-color: #FF9900; font-weight: 600; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+
+    /* check start */
+    .check-start { text-align: center; padding: 60px 20px; }
+    .check-start h2 { font-size: 22px; margin-bottom: 8px; }
+    .check-start p { color: #666; margin-bottom: 24px; }
+    .stats { display: flex; justify-content: center; gap: 32px; margin-bottom: 32px; }
+    .stat-box {
+      background: #fff; border-radius: 10px; padding: 16px 28px;
+      text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .stat-box .num { font-size: 32px; font-weight: 700; color: #FF9900; }
+    .stat-box .label { font-size: 12px; color: #888; margin-top: 2px; }
+
+    /* session */
+    .session-area { max-width: 700px; margin: 0 auto; }
+    .progress-bar-wrap {
+      background: #e0e0e0; border-radius: 99px; height: 8px;
+      margin-bottom: 8px; overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #FF9900, #ffba49);
+      border-radius: 99px; transition: width 0.3s;
+    }
+    .progress-label { text-align: center; font-size: 13px; color: #888; margin-bottom: 20px; }
+
+    .check-card {
+      background: #fff; border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      padding: 24px 28px; margin-bottom: 16px;
+    }
+    .product-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+    .product-badge {
+      background: #131921; color: #FF9900;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px; white-space: nowrap;
+    }
+    .product-name { font-size: 17px; font-weight: 700; }
+    .keyword-display {
+      display: flex; align-items: center; gap: 10px;
+      margin: 14px 0; padding: 14px 18px;
+      background: #fff8ee; border: 2px solid #FF9900; border-radius: 10px;
+    }
+    .keyword-text { font-size: 20px; font-weight: 700; color: #c45000; flex: 1; }
+    .kw-count { font-size: 12px; color: #aaa; white-space: nowrap; }
+
+    .btn-amazon {
+      width: 100%; padding: 14px;
+      background: #FF9900; color: #fff; border: none;
+      border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+      margin-bottom: 18px;
+    }
+    .btn-amazon:hover { background: #e88a00; }
+
+    /* result inputs */
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: #666; margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .form-group input[type="number"] {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #e0e0e0; border-radius: 8px;
+      font-size: 28px; font-weight: 700; text-align: center;
+      transition: border-color 0.15s; outline: none;
+    }
+    .form-group input[type="number"]:focus { border-color: #FF9900; }
+    .notfound-wrap {
+      grid-column: span 2; display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; background: #f8f8f8; border-radius: 8px;
+      cursor: pointer; user-select: none;
+    }
+    .notfound-wrap input { width: 18px; height: 18px; cursor: pointer; accent-color: #c0392b; }
+    .notfound-wrap span { font-size: 14px; color: #555; }
+
+    .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+    .form-group textarea {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #e0e0e0; border-radius: 8px;
+      font-size: 13px; resize: none; height: 72px;
+      font-family: inherit; transition: border-color 0.15s; outline: none;
+    }
+    .form-group textarea:focus { border-color: #FF9900; }
+
+    .action-btns { display: flex; gap: 10px; align-items: center; }
+    .btn-next {
+      background: #131921; color: #fff; border: none;
+      padding: 14px 32px; border-radius: 8px;
+      font-size: 16px; font-weight: 700; cursor: pointer; flex: 1;
+    }
+    .btn-next:hover { background: #2a3f56; }
+    .btn-skip {
+      background: none; border: 1px solid #ddd; color: #999;
+      padding: 14px 18px; border-radius: 8px; font-size: 13px; cursor: pointer;
+    }
+    .btn-skip:hover { border-color: #bbb; color: #666; }
+    .btn-reset-session {
+      font-size: 12px; color: #bbb; background: none; border: none;
+      cursor: pointer; text-decoration: underline; display: block; margin: 0 auto;
+    }
+
+    .session-complete { text-align: center; padding: 50px 20px; }
+    .session-complete .big-check { font-size: 64px; margin-bottom: 16px; }
+    .session-complete h2 { font-size: 24px; margin-bottom: 8px; }
+    .session-complete p { color: #666; margin-bottom: 24px; }
+    .session-complete-btns { display: flex; gap: 12px; justify-content: center; }
+
+    /* products */
+    .tab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .tab-header h2 { font-size: 18px; font-weight: 700; }
+    .btn-primary {
+      background: #FF9900; color: #fff; border: none;
+      padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .btn-primary:hover { background: #e88a00; }
+    .product-list { display: flex; flex-direction: column; gap: 12px; }
+    .product-item {
+      background: #fff; border-radius: 12px; padding: 18px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .product-num {
+      background: #f0f2f5; color: #666; font-size: 12px; font-weight: 700;
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .product-info { flex: 1; min-width: 0; }
+    .product-item-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .product-keywords { display: flex; gap: 6px; flex-wrap: wrap; }
+    .kw-tag {
+      background: #fff8ee; border: 1px solid #ffd080;
+      color: #c45000; font-size: 12px; padding: 2px 10px; border-radius: 99px;
+    }
+    .product-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-edit, .btn-delete {
+      background: none; border: 1px solid #ddd;
+      padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
+    }
+    .btn-edit:hover { background: #f5f5f5; }
+    .btn-delete { color: #e74c3c; }
+    .btn-delete:hover { background: #fff0f0; border-color: #e74c3c; }
+
+    /* modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 20px;
+    }
+    .modal {
+      background: #fff; border-radius: 16px; padding: 28px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .mform-group { margin-bottom: 16px; }
+    .mform-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+    .mform-group input[type="text"] {
+      width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+      border-radius: 8px; font-size: 14px; font-family: inherit; outline: none;
+    }
+    .mform-group input[type="text"]:focus { border-color: #FF9900; }
+    .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-cancel {
+      flex: 1; background: none; border: 1px solid #ddd;
+      padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer;
+    }
+    .btn-save {
+      flex: 2; background: #FF9900; color: #fff; border: none;
+      padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .btn-save:hover { background: #e88a00; }
+
+    /* history */
+    .history-filters { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+    .history-filters select, .history-filters input[type="date"] {
+      padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 13px; font-family: inherit; background: #fff; outline: none;
+    }
+    .btn-export {
+      background: #fff; border: 1px solid #ddd; color: #555;
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer;
+    }
+    .btn-export:hover { background: #f5f5f5; }
+    .history-table-wrap { overflow-x: auto; }
+    table {
+      width: 100%; border-collapse: collapse; background: #fff;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    th {
+      background: #232f3e; color: #ccc; font-size: 12px; font-weight: 600;
+      padding: 12px 14px; text-align: left; white-space: nowrap;
+    }
+    td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fffbf5; }
+    .rank-badge {
+      display: inline-block; background: #fff8ee; border: 1px solid #ffd080;
+      color: #c45000; font-weight: 700; padding: 2px 10px;
+      border-radius: 99px; white-space: nowrap;
+    }
+    .rank-notfound { background: #fff0f0; border-color: #ffaaaa; color: #c0392b; }
+    .note-cell { color: #555; max-width: 160px; white-space: pre-wrap; word-break: break-all; }
+    .no-data { text-align: center; padding: 48px; color: #aaa; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      background: #131921; color: #fff;
+      padding: 10px 24px; border-radius: 8px;
+      font-size: 14px; opacity: 0; transition: opacity 0.3s;
+      pointer-events: none; z-index: 200; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+    .toast.ok { background: #27ae60; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="logo">amazon</span>
+  <h1>検索順位チェッカー</h1>
+  <span class="date" id="header-date"></span>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="check">✔ 本日のチェック</button>
+  <button class="tab-btn" data-tab="products">📦 商品管理</button>
+  <button class="tab-btn" data-tab="history">📊 履歴</button>
+</nav>
+
+<div id="tab-check" class="tab-content active">
+  <div class="container" id="check-container"></div>
+</div>
+
+<div id="tab-products" class="tab-content">
+  <div class="container">
+    <div class="tab-header">
+      <h2>商品一覧 <span id="product-count" style="font-size:14px;font-weight:400;color:#888;"></span></h2>
+      <button class="btn-primary" onclick="openProductModal()">＋ 商品を追加</button>
+    </div>
+    <div class="product-list" id="product-list"></div>
+  </div>
+</div>
+
+<div id="tab-history" class="tab-content">
+  <div class="container">
+    <div class="tab-header">
+      <h2>チェック履歴</h2>
+      <button class="btn-export" onclick="exportCSV()">⬇ CSVエクスポート</button>
+    </div>
+    <div class="history-filters">
+      <input type="date" id="filter-date" oninput="renderHistory()">
+      <select id="filter-product" onchange="renderHistory()"><option value="">全商品</option></select>
+    </div>
+    <div class="history-table-wrap" id="history-table-wrap"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="product-modal" style="display:none;" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <h3 id="modal-title">商品を追加</h3>
+    <div class="mform-group">
+      <label>商品名</label>
+      <input type="text" id="m-name" placeholder="例：プレミアム洗車スポンジ">
+    </div>
+    <div class="mform-group">
+      <label>キーワード 1（必須）</label>
+      <input type="text" id="m-kw1" placeholder="例：洗車スポンジ">
+    </div>
+    <div class="mform-group">
+      <label>キーワード 2（任意）</label>
+      <input type="text" id="m-kw2" placeholder="例：カーウォッシュスポンジ">
+    </div>
+    <div class="mform-group">
+      <label>キーワード 3（任意）</label>
+      <input type="text" id="m-kw3" placeholder="例：洗車グッズ スポンジ">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-save" onclick="saveProduct()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const load = k => JSON.parse(localStorage.getItem(k) || 'null');
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const loadProducts = () => load('amz_products') || [];
+const saveProducts = p => save('amz_products', p);
+const loadResults  = () => load('amz_results')  || [];
+const saveResults  = r => save('amz_results', r);
+const loadSession  = () => load('amz_session');
+const saveSession  = s => save('amz_session', s);
+
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ===== TABS =====
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'products') renderProducts();
+    if (btn.dataset.tab === 'history')  renderHistory();
+    if (btn.dataset.tab === 'check')    renderCheck();
+  });
+});
+
+// ===== CHECK TAB =====
+function getAllKwList(products) {
+  const list = [];
+  products.forEach(p => {
+    p.keywords.filter(k => k).forEach(k =>
+      list.push({ productId: p.id, productName: p.name, keyword: k })
+    );
+  });
+  return list;
+}
+
+function renderCheck() {
+  const products  = loadProducts();
+  const container = document.getElementById('check-container');
+
+  if (products.length === 0) {
+    container.innerHTML = `
+      <div class="check-start">
+        <h2>商品が登録されていません</h2>
+        <p>「商品管理」タブで商品とキーワードを登録してください。</p>
+      </div>`;
+    return;
+  }
+
+  const session = loadSession();
+  if (!session) {
+    const total = getAllKwList(products).length;
+    container.innerHTML = `
+      <div class="check-start">
+        <h2>本日のチェックを開始</h2>
+        <p>キーワードを順番に検索して順位を記録します</p>
+        <div class="stats">
+          <div class="stat-box"><div class="num">${products.length}</div><div class="label">商品数</div></div>
+          <div class="stat-box"><div class="num">${total}</div><div class="label">キーワード合計</div></div>
+        </div>
+        <button class="btn-next" style="max-width:260px;margin:0 auto;display:block;" onclick="startSession()">チェック開始 →</button>
+      </div>`;
+    return;
+  }
+
+  const allKws = getAllKwList(products);
+  if (session.index >= allKws.length) { renderComplete(); return; }
+  renderCard(session, allKws, products);
+}
+
+function startSession() { saveSession({ index: 0, date: today() }); renderCheck(); }
+
+function renderCard(session, allKws, products) {
+  const cur   = allKws[session.index];
+  const total = allKws.length;
+  const idx   = session.index;
+  const pct   = Math.round((idx / total) * 100);
+  const sameProduct = allKws.filter(k => k.productId === cur.productId);
+  const kwIdx = sameProduct.findIndex(k => k.keyword === cur.keyword) + 1;
+  const pIdx  = products.findIndex(p => p.id === cur.productId) + 1;
+  const amazonUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(cur.keyword)}`;
+
+  document.getElementById('check-container').innerHTML = `
+    <div class="session-area">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" style="width:${pct}%"></div>
+      </div>
+      <div class="progress-label">${idx} / ${total} 完了</div>
+
+      <div class="check-card">
+        <div class="product-header">
+          <span class="product-badge">商品 ${pIdx} / ${products.length}</span>
+          <span class="product-name">${cur.productName}</span>
+        </div>
+
+        <div class="keyword-display">
+          <span style="font-size:18px">🔍</span>
+          <span class="keyword-text">${cur.keyword}</span>
+          <span class="kw-count">KW ${kwIdx} / ${sameProduct.length}</span>
+        </div>
+
+        <button class="btn-amazon" onclick="window.open('${amazonUrl}','_blank')">
+          ↗ Amazonで検索
+        </button>
+
+        <div class="result-grid">
+          <div class="form-group">
+            <label>何ページ目</label>
+            <input type="number" id="inp-page" min="1" max="20" placeholder="—" oninput="uncheckNF()">
+          </div>
+          <div class="form-group">
+            <label>何番目</label>
+            <input type="number" id="inp-pos" min="1" max="48" placeholder="—" oninput="uncheckNF()">
+          </div>
+          <div class="notfound-wrap" onclick="toggleNF()">
+            <input type="checkbox" id="inp-nf" onclick="event.stopPropagation();syncNF()">
+            <span>圏外・見つからなかった</span>
+          </div>
+        </div>
+
+        <div class="notes-grid">
+          <div class="form-group">
+            <label>ライバル価格メモ</label>
+            <textarea id="inp-price" placeholder="例：最安値 2,480円&#10;上位は2,200〜2,800円帯"></textarea>
+          </div>
+          <div class="form-group">
+            <label>新規参入・気になった商品</label>
+            <textarea id="inp-new" placeholder="例：新商品あり&#10;3枚セット商品が上位に"></textarea>
+          </div>
+        </div>
+
+        <div class="action-btns">
+          <button class="btn-skip" onclick="skipKw()">スキップ</button>
+          <button class="btn-next" onclick="saveAndNext()">保存して次へ →</button>
+        </div>
+      </div>
+
+      <button class="btn-reset-session" onclick="resetSession()">セッションをリセット</button>
+    </div>`;
+}
+
+function uncheckNF() { document.getElementById('inp-nf').checked = false; }
+function syncNF() {
+  if (document.getElementById('inp-nf').checked) {
+    document.getElementById('inp-page').value = '';
+    document.getElementById('inp-pos').value  = '';
+  }
+}
+function toggleNF() { const cb = document.getElementById('inp-nf'); cb.checked = !cb.checked; syncNF(); }
+
+function saveAndNext() {
+  const session  = loadSession();
+  const products = loadProducts();
+  const allKws   = getAllKwList(products);
+  const cur      = allKws[session.index];
+  const page     = document.getElementById('inp-page').value;
+  const pos      = document.getElementById('inp-pos').value;
+  const nf       = document.getElementById('inp-nf').checked;
+
+  if (!nf && (!page || !pos)) { showToast('ページ数と番目を入力するか「圏外」をチェックしてください'); return; }
+
+  const results = loadResults();
+  results.push({
+    date: today(), productId: cur.productId, productName: cur.productName,
+    keyword: cur.keyword,
+    page: nf ? null : parseInt(page), position: nf ? null : parseInt(pos), notFound: nf,
+    priceNote: document.getElementById('inp-price').value.trim(),
+    newNote:   document.getElementById('inp-new').value.trim()
+  });
+  saveResults(results);
+  session.index++;
+  saveSession(session);
+  renderCheck();
+}
+
+function skipKw() { const s = loadSession(); s.index++; saveSession(s); renderCheck(); }
+function resetSession() {
+  if (confirm('セッションをリセットしますか？（保存済みデータは残ります）')) { saveSession(null); renderCheck(); }
+}
+function renderComplete() {
+  document.getElementById('check-container').innerHTML = `
+    <div class="session-complete">
+      <div class="big-check">✅</div>
+      <h2>本日のチェック完了！</h2>
+      <p>お疲れ様でした。全キーワードのチェックが終わりました。</p>
+      <div class="session-complete-btns">
+        <button class="btn-next" style="max-width:200px;" onclick="saveSession(null);renderCheck()">新規セッション開始</button>
+        <button class="btn-export" onclick="document.querySelector('[data-tab=history]').click()">履歴を確認 →</button>
+      </div>
+    </div>`;
+  saveSession(null);
+}
+
+// ===== PRODUCTS TAB =====
+let editingId = null;
+
+function renderProducts() {
+  const products = loadProducts();
+  document.getElementById('product-count').textContent = `(${products.length}件)`;
+  const list = document.getElementById('product-list');
+  if (products.length === 0) { list.innerHTML = '<div class="no-data">まだ商品が登録されていません</div>'; return; }
+  list.innerHTML = products.map((p, i) => `
+    <div class="product-item">
+      <div class="product-num">${i + 1}</div>
+      <div class="product-info">
+        <div class="product-item-name">${p.name}</div>
+        <div class="product-keywords">${p.keywords.filter(k=>k).map(k=>`<span class="kw-tag">🔍 ${k}</span>`).join('')}</div>
+      </div>
+      <div class="product-actions">
+        <button class="btn-edit" onclick="openProductModal(${p.id})">編集</button>
+        <button class="btn-delete" onclick="deleteProduct(${p.id})">削除</button>
+      </div>
+    </div>`).join('');
+}
+
+function openProductModal(id = null) {
+  editingId = id;
+  document.getElementById('modal-title').textContent = id ? '商品を編集' : '商品を追加';
+  if (id) {
+    const p = loadProducts().find(p => p.id === id);
+    document.getElementById('m-name').value = p.name;
+    document.getElementById('m-kw1').value  = p.keywords[0] || '';
+    document.getElementById('m-kw2').value  = p.keywords[1] || '';
+    document.getElementById('m-kw3').value  = p.keywords[2] || '';
+  } else {
+    ['m-name','m-kw1','m-kw2','m-kw3'].forEach(i => document.getElementById(i).value = '');
+  }
+  document.getElementById('product-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('m-name').focus(), 50);
+}
+function closeModal() { document.getElementById('product-modal').style.display = 'none'; editingId = null; }
+function closeModalOnOverlay(e) { if (e.target === document.getElementById('product-modal')) closeModal(); }
+
+function saveProduct() {
+  const name = document.getElementById('m-name').value.trim();
+  const kw1  = document.getElementById('m-kw1').value.trim();
+  if (!name) { showToast('商品名を入力してください'); return; }
+  if (!kw1)  { showToast('キーワード1は必須です'); return; }
+  const keywords = [kw1, document.getElementById('m-kw2').value.trim(), document.getElementById('m-kw3').value.trim()];
+  const products = loadProducts();
+  if (editingId) {
+    const idx = products.findIndex(p => p.id === editingId);
+    products[idx] = { ...products[idx], name, keywords };
+  } else {
+    products.push({ id: Date.now(), name, keywords });
+  }
+  saveProducts(products);
+  closeModal(); renderProducts();
+  showToast(editingId ? '更新しました' : '追加しました', 'ok');
+}
+
+function deleteProduct(id) {
+  if (!confirm('この商品を削除しますか？')) return;
+  saveProducts(loadProducts().filter(p => p.id !== id));
+  renderProducts(); showToast('削除しました');
+}
+
+// ===== HISTORY TAB =====
+function renderHistory() {
+  const results = loadResults(), products = loadProducts();
+  const filterDate = document.getElementById('filter-date').value;
+  const filterProduct = document.getElementById('filter-product').value;
+  const sel = document.getElementById('filter-product'), prev = sel.value;
+  sel.innerHTML = '<option value="">全商品</option>';
+  products.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = p.name;
+    if (String(p.id) === prev) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  let list = [...results].reverse();
+  if (filterDate)    list = list.filter(r => r.date === filterDate);
+  if (filterProduct) list = list.filter(r => String(r.productId) === filterProduct);
+  const wrap = document.getElementById('history-table-wrap');
+  if (!list.length) { wrap.innerHTML = '<div class="no-data">データがありません</div>'; return; }
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>日付</th><th>商品名</th><th>キーワード</th><th>順位</th><th>ライバル価格</th><th>新規参入メモ</th></tr></thead>
+      <tbody>
+        ${list.map(r => `
+          <tr>
+            <td style="white-space:nowrap">${r.date}</td>
+            <td style="font-weight:600">${r.productName}</td>
+            <td><span class="kw-tag">${r.keyword}</span></td>
+            <td>${r.notFound ? '<span class="rank-badge rank-notfound">圏外</span>' : `<span class="rank-badge">${r.page}P / ${r.position}番</span>`}</td>
+            <td class="note-cell">${r.priceNote||'—'}</td>
+            <td class="note-cell">${r.newNote||'—'}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function exportCSV() {
+  const results = loadResults();
+  if (!results.length) { showToast('データがありません'); return; }
+  const header = ['日付','商品名','キーワード','ページ','順位','圏外','ライバル価格','新規参入メモ'];
+  const rows = results.map(r => [r.date,r.productName,r.keyword,r.page??'',r.position??'',r.notFound?'○':'',r.priceNote||'',r.newNote||'']);
+  const csv = [header,...rows].map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = `amazon_rank_${today()}.csv`; a.click();
+  showToast('CSVをダウンロードしました');
+}
+
+// ===== INIT =====
+document.getElementById('header-date').textContent = new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+renderCheck();
+</script>
+</body>
+</html>
