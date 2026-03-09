@@ -30,6 +30,45 @@
     .tab-content.active { display: block; }
     .container { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
 
+    /* 2カラムレイアウト */
+    .check-layout {
+      max-width: 1280px; margin: 0 auto;
+      padding: 24px 20px;
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* サイドバー */
+    .sidebar-box {
+      background: #fff; border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 16px;
+      position: sticky; top: 20px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+    .sidebar-title { font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .sb-product { margin-bottom: 14px; }
+    .sb-product-name {
+      font-size: 13px; font-weight: 700; color: #1a1a1a;
+      margin-bottom: 6px; padding-bottom: 6px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .sb-kw {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 6px; border-radius: 6px;
+      font-size: 12px; margin-bottom: 2px;
+    }
+    .sb-kw.done    { color: #888; }
+    .sb-kw.current { background: #fff8ee; color: #c45000; font-weight: 700; }
+    .sb-kw.pending { color: #bbb; }
+    .sb-icon { font-size: 13px; flex-shrink: 0; }
+    .sb-kw-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sb-rank { font-size: 11px; color: #27ae60; font-weight: 600; white-space: nowrap; }
+    .sb-rank.out { color: #e74c3c; }
+
     /* check start */
     .check-start { text-align: center; padding: 60px 20px; }
     .check-start h2 { font-size: 22px; margin-bottom: 8px; }
@@ -43,7 +82,7 @@
     .stat-box .label { font-size: 12px; color: #888; margin-top: 2px; }
 
     /* session */
-    .session-area { max-width: 700px; margin: 0 auto; }
+    .session-area { width: 100%; }
     .progress-bar-wrap {
       background: #e0e0e0; border-radius: 99px; height: 8px;
       margin-bottom: 8px; overflow: hidden;
@@ -75,6 +114,16 @@
     .keyword-text { font-size: 20px; font-weight: 700; color: #c45000; flex: 1; }
     .kw-count { font-size: 12px; color: #aaa; white-space: nowrap; }
 
+    .prev-result {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; margin-bottom: 14px;
+      background: #f5f0ff; border: 1px solid #d4b8ff;
+      border-radius: 8px;
+    }
+    .prev-none { background: #f5f5f5; border-color: #e0e0e0; }
+    .prev-label { font-size: 11px; font-weight: 600; color: #888; white-space: nowrap; }
+    .prev-rank  { font-size: 15px; font-weight: 700; color: #6c3fcf; }
+
     .btn-amazon {
       width: 100%; padding: 14px;
       background: #FF9900; color: #fff; border: none;
@@ -91,13 +140,15 @@
       color: #666; margin-bottom: 6px;
       text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .form-group input[type="number"] {
+    .form-group input[type="number"],
+    .form-group input[type="text"] {
       width: 100%; padding: 10px 14px;
       border: 2px solid #e0e0e0; border-radius: 8px;
       font-size: 28px; font-weight: 700; text-align: center;
       transition: border-color 0.15s; outline: none;
     }
-    .form-group input[type="number"]:focus { border-color: #FF9900; }
+    .form-group input[type="number"]:focus,
+    .form-group input[type="text"]:focus { border-color: #FF9900; }
     .notfound-wrap {
       grid-column: span 2; display: flex; align-items: center; gap: 8px;
       padding: 10px 14px; background: #f8f8f8; border-radius: 8px;
@@ -122,6 +173,12 @@
       font-size: 16px; font-weight: 700; cursor: pointer; flex: 1;
     }
     .btn-next:hover { background: #2a3f56; }
+    .btn-back {
+      background: none; border: 1px solid #ddd; color: #888;
+      padding: 14px 16px; border-radius: 8px; font-size: 13px; cursor: pointer;
+    }
+    .btn-back:hover:not(:disabled) { border-color: #bbb; color: #444; }
+    .btn-back:disabled { opacity: 0.3; cursor: not-allowed; }
     .btn-skip {
       background: none; border: 1px solid #ddd; color: #999;
       padding: 14px 18px; border-radius: 8px; font-size: 13px; cursor: pointer;
@@ -166,10 +223,13 @@
       color: #c45000; font-size: 12px; padding: 2px 10px; border-radius: 99px;
     }
     .product-actions { display: flex; gap: 8px; flex-shrink: 0; }
-    .btn-edit, .btn-delete {
+    .btn-edit, .btn-delete, .btn-move {
       background: none; border: 1px solid #ddd;
       padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
     }
+    .btn-move { padding: 6px 10px; color: #666; }
+    .btn-move:hover:not(:disabled) { background: #f5f5f5; }
+    .btn-move:disabled { opacity: 0.3; cursor: default; }
     .btn-edit:hover { background: #f5f5f5; }
     .btn-delete { color: #e74c3c; }
     .btn-delete:hover { background: #fff0f0; border-color: #e74c3c; }
@@ -264,7 +324,10 @@
 </nav>
 
 <div id="tab-check" class="tab-content active">
-  <div class="container" id="check-container"></div>
+  <div class="check-layout">
+    <div id="check-container"></div>
+    <div id="check-sidebar"></div>
+  </div>
 </div>
 
 <div id="tab-products" class="tab-content">
@@ -367,6 +430,51 @@ function getAllKwList(products) {
   return list;
 }
 
+function renderSidebar(allKws, currentIndex) {
+  const products = loadProducts();
+  const results  = loadResults();
+  const todayStr = today();
+  const sb = document.getElementById('check-sidebar');
+  if (!sb) return;
+
+  if (!allKws || allKws.length === 0) { sb.innerHTML = ''; return; }
+
+  // 今日の結果をmap化
+  const todayMap = {};
+  results.filter(r => r.date === todayStr).forEach(r => {
+    todayMap[r.productId + '|' + r.keyword] = r;
+  });
+
+  let html = '<div class="sidebar-box"><div class="sidebar-title">進捗</div>';
+  products.forEach(p => {
+    const kwList = allKws.filter(k => k.productId === p.id);
+    if (!kwList.length) return;
+    html += `<div class="sb-product"><div class="sb-product-name">${p.name}</div>`;
+    kwList.forEach(k => {
+      const globalIdx = allKws.findIndex(x => x.productId === k.productId && x.keyword === k.keyword);
+      const key = k.productId + '|' + k.keyword;
+      const done = todayMap[key];
+      let cls = 'pending', icon = '○', rankHtml = '';
+      if (done) {
+        cls = 'done'; icon = '✓';
+        rankHtml = done.notFound
+          ? '<span class="sb-rank out">圏外</span>'
+          : `<span class="sb-rank">${done.page}P/${done.position}番</span>`;
+      } else if (globalIdx === currentIndex) {
+        cls = 'current'; icon = '▶';
+      }
+      html += `<div class="sb-kw ${cls}" onclick="jumpTo(${globalIdx})" style="cursor:pointer">
+        <span class="sb-icon">${icon}</span>
+        <span class="sb-kw-text">${k.keyword}</span>
+        ${rankHtml}
+      </div>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  sb.innerHTML = html;
+}
+
 function renderCheck() {
   const products  = loadProducts();
   const container = document.getElementById('check-container');
@@ -377,12 +485,15 @@ function renderCheck() {
         <h2>商品が登録されていません</h2>
         <p>「商品管理」タブで商品とキーワードを登録してください。</p>
       </div>`;
+    renderSidebar([], -1);
     return;
   }
 
   const session = loadSession();
+  const allKws  = getAllKwList(products);
+
   if (!session) {
-    const total = getAllKwList(products).length;
+    const total = allKws.length;
     container.innerHTML = `
       <div class="check-start">
         <h2>本日のチェックを開始</h2>
@@ -393,15 +504,34 @@ function renderCheck() {
         </div>
         <button class="btn-next" style="max-width:260px;margin:0 auto;display:block;" onclick="startSession()">チェック開始 →</button>
       </div>`;
+    renderSidebar(allKws, -1);
     return;
   }
 
-  const allKws = getAllKwList(products);
   if (session.index >= allKws.length) { renderComplete(); return; }
   renderCard(session, allKws, products);
 }
 
 function startSession() { saveSession({ index: 0, date: today() }); renderCheck(); }
+
+function jumpTo(index) {
+  const s = loadSession();
+  if (!s) return;
+  s.index = index;
+  saveSession(s);
+  renderCheck();
+}
+
+function getPrevResult(productId, keyword) {
+  const results = loadResults();
+  const todayStr = today();
+  // 今日以外で最新のレコードを返す
+  for (let i = results.length - 1; i >= 0; i--) {
+    const r = results[i];
+    if (r.productId === productId && r.keyword === keyword && r.date !== todayStr) return r;
+  }
+  return null;
+}
 
 function renderCard(session, allKws, products) {
   const cur   = allKws[session.index];
@@ -412,6 +542,20 @@ function renderCard(session, allKws, products) {
   const kwIdx = sameProduct.findIndex(k => k.keyword === cur.keyword) + 1;
   const pIdx  = products.findIndex(p => p.id === cur.productId) + 1;
   const amazonUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(cur.keyword)}`;
+
+  renderSidebar(allKws, idx);
+
+  // 今日の保存済みデータがあれば復元（戻った時用）
+  const todayResult = loadResults().slice().reverse()
+    .find(r => r.date === today() && r.productId === cur.productId && r.keyword === cur.keyword);
+
+  const prev = getPrevResult(cur.productId, cur.keyword);
+  const prevHtml = prev
+    ? `<div class="prev-result">
+        <span class="prev-label">前回 (${prev.date})</span>
+        <span class="prev-rank">${prev.notFound ? '圏外' : `${prev.page}ページ目 &nbsp;${prev.position}番`}</span>
+       </div>`
+    : `<div class="prev-result prev-none"><span class="prev-label">前回データなし</span></div>`;
 
   document.getElementById('check-container').innerHTML = `
     <div class="session-area">
@@ -436,6 +580,8 @@ function renderCard(session, allKws, products) {
           ↗ Amazonで検索
         </button>
 
+        ${prevHtml}
+
         <div class="result-grid">
           <div class="form-group">
             <label>何ページ目</label>
@@ -443,7 +589,7 @@ function renderCard(session, allKws, products) {
           </div>
           <div class="form-group">
             <label>何番目</label>
-            <input type="number" id="inp-pos" min="1" max="48" placeholder="—" oninput="uncheckNF()">
+            <input type="text" id="inp-pos" placeholder="—" oninput="uncheckNF()">
           </div>
           <div class="notfound-wrap" onclick="toggleNF()">
             <input type="checkbox" id="inp-nf" onclick="event.stopPropagation();syncNF()">
@@ -463,6 +609,7 @@ function renderCard(session, allKws, products) {
         </div>
 
         <div class="action-btns">
+          <button class="btn-back" onclick="goBack()" ${session.index === 0 ? 'disabled' : ''}>← 戻る</button>
           <button class="btn-skip" onclick="skipKw()">スキップ</button>
           <button class="btn-next" onclick="saveAndNext()">保存して次へ →</button>
         </div>
@@ -470,6 +617,18 @@ function renderCard(session, allKws, products) {
 
       <button class="btn-reset-session" onclick="resetSession()">セッションをリセット</button>
     </div>`;
+
+  // 今日の保存済み値を復元
+  if (todayResult) {
+    if (todayResult.notFound) {
+      document.getElementById('inp-nf').checked = true;
+    } else {
+      document.getElementById('inp-page').value = todayResult.page || '';
+      document.getElementById('inp-pos').value  = todayResult.position || '';
+    }
+    document.getElementById('inp-price').value = todayResult.priceNote || '';
+    document.getElementById('inp-new').value   = todayResult.newNote   || '';
+  }
 }
 
 function uncheckNF() { document.getElementById('inp-nf').checked = false; }
@@ -503,6 +662,14 @@ function saveAndNext() {
   saveResults(results);
   session.index++;
   saveSession(session);
+  renderCheck();
+}
+
+function goBack() {
+  const s = loadSession();
+  if (s.index <= 0) return;
+  s.index--;
+  saveSession(s);
   renderCheck();
 }
 
@@ -540,6 +707,8 @@ function renderProducts() {
         <div class="product-keywords">${p.keywords.filter(k=>k).map(k=>`<span class="kw-tag">🔍 ${k}</span>`).join('')}</div>
       </div>
       <div class="product-actions">
+        <button class="btn-move" onclick="moveProduct(${p.id}, -1)" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button class="btn-move" onclick="moveProduct(${p.id}, 1)" ${i === products.length - 1 ? 'disabled' : ''}>↓</button>
         <button class="btn-edit" onclick="openProductModal(${p.id})">編集</button>
         <button class="btn-delete" onclick="deleteProduct(${p.id})">削除</button>
       </div>
@@ -586,6 +755,16 @@ function deleteProduct(id) {
   if (!confirm('この商品を削除しますか？')) return;
   saveProducts(loadProducts().filter(p => p.id !== id));
   renderProducts(); showToast('削除しました');
+}
+
+function moveProduct(id, dir) {
+  const products = loadProducts();
+  const i = products.findIndex(p => p.id === id);
+  const j = i + dir;
+  if (j < 0 || j >= products.length) return;
+  [products[i], products[j]] = [products[j], products[i]];
+  saveProducts(products);
+  renderProducts();
 }
 
 // ===== HISTORY TAB =====
