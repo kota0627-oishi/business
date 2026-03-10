@@ -197,6 +197,32 @@
   .x .card-count { color: #aaa; }
   .tt .card-count { color: var(--tt); }
 
+  .card-count { cursor: pointer; }
+  .card-count:hover { opacity: 0.75; }
+
+  .card-link-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    z-index: 1;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .card-link-btn:hover { background: var(--bg4); color: var(--text); }
+  .card-link-btn.unset { color: var(--text3); border-style: dashed; }
+
   /* コンテンツカレンダー */
   .calendar-section {
     background: var(--bg2);
@@ -240,6 +266,8 @@
     font-weight: 600;
     padding: 6px;
   }
+  .cal-day-header.sun { color: #ef4444; }
+  .cal-day-header.sat { color: #3b82f6; }
 
   .cal-day {
     background: var(--bg3);
@@ -252,6 +280,9 @@
 
   .cal-day.empty { background: transparent; border-color: transparent; }
   .cal-day.today { border-color: var(--accent); }
+  .cal-day.sunday  { background: rgba(239,68,68,0.07); }
+  .cal-day.saturday { background: rgba(59,130,246,0.07); }
+  .cal-day.holiday { background: rgba(239,68,68,0.07); }
 
   .cal-day-num {
     font-size: 11px;
@@ -261,6 +292,19 @@
   }
 
   .cal-day.today .cal-day-num { color: var(--accent2); }
+  .cal-day.sunday .cal-day-num  { color: #ef4444; }
+  .cal-day.saturday .cal-day-num { color: #3b82f6; }
+  .cal-day.holiday .cal-day-num { color: #ef4444; }
+  .cal-day.holiday-label::after {
+    content: attr(data-holiday);
+    display: block;
+    font-size: 9px;
+    color: #ef4444;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .cal-event {
     font-size: 10px;
@@ -270,12 +314,23 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 3px;
   }
 
+  /* 投稿日イベント */
   .cal-event.yt { background: rgba(255,0,0,0.2); color: #ff6666; }
   .cal-event.ig { background: rgba(225,48,108,0.2); color: #ff6699; }
-  .cal-event.x { background: rgba(255,255,255,0.1); color: #cccccc; }
+  .cal-event.x  { background: rgba(255,255,255,0.1); color: #cccccc; }
   .cal-event.tt { background: rgba(105,201,208,0.2); color: var(--tt); }
+
+  /* 撮影日イベント（カメラアイコン付き・オレンジ系） */
+  .cal-event.shoot {
+    background: rgba(251,146,60,0.18);
+    color: #fb923c;
+    border-left: 2px solid #fb923c;
+  }
 
   /* テーブル共通 */
   .toolbar {
@@ -333,6 +388,21 @@
   }
   .search-box:focus { outline: none; border-color: var(--accent); }
 
+  .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .filter-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .filter-pill:hover { border-color: var(--accent); color: var(--text); }
+  .filter-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
   .filter-select {
     background: var(--bg3);
     border: 1px solid var(--border);
@@ -378,7 +448,8 @@
   }
 
   tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(124,58,237,0.05); }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover td { background: rgba(124,58,237,0.05); }
 
   .row-num {
     color: var(--text3);
@@ -842,28 +913,28 @@
 
     <div class="dashboard-grid">
       <div class="platform-card yt" onclick="showPage('youtube', document.querySelector('[data-page=youtube]'))">
+        <div class="card-link-btn" id="link-btn-youtube" onclick="event.stopPropagation(); openSocialLink('youtube')" title="YouTubeチャンネルを開く">↗</div>
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="#ff0000" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
         <div class="card-name">YOUTUBE</div>
-        <div class="card-count" id="dash-yt-count">0</div>
-        <div class="card-sub">本 / <span id="dash-yt-posted">0</span>本 投稿済み</div>
+        <div class="card-sub"><span id="dash-yt-posted">0</span>本 投稿済み</div>
       </div>
       <div class="platform-card ig" onclick="showPage('instagram', document.querySelector('[data-page=instagram]'))">
+        <div class="card-link-btn" id="link-btn-instagram" onclick="event.stopPropagation(); openSocialLink('instagram')" title="Instagramを開く">↗</div>
         <div class="card-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ig-card" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="25%" style="stop-color:#e6683c"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="75%" style="stop-color:#cc2366"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path fill="url(#ig-card)" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></div>
         <div class="card-name">INSTAGRAM</div>
-        <div class="card-count" id="dash-ig-count">0</div>
-        <div class="card-sub">投稿 / <span id="dash-ig-posted">0</span> 完了</div>
+        <div class="card-sub"><span id="dash-ig-posted">0</span>件 投稿済み</div>
       </div>
       <div class="platform-card x" onclick="showPage('x', document.querySelector('[data-page=x]'))">
+        <div class="card-link-btn" id="link-btn-x" onclick="event.stopPropagation(); openSocialLink('x')" title="Xを開く">↗</div>
         <div class="card-icon"><svg viewBox="0 0 24 24" fill="#000000" xmlns="http://www.w3.org/2000/svg"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></div>
         <div class="card-name">X (TWITTER)</div>
-        <div class="card-count" id="dash-x-count">0</div>
-        <div class="card-sub">ポスト / <span id="dash-x-posted">0</span> 投稿済み</div>
+        <div class="card-sub"><span id="dash-x-posted">0</span>件 投稿済み</div>
       </div>
       <div class="platform-card tt" onclick="showPage('tiktok', document.querySelector('[data-page=tiktok]'))">
+        <div class="card-link-btn unset" id="link-btn-tiktok" onclick="event.stopPropagation(); openSocialLink('tiktok')" title="TikTokを開く（未設定）">↗</div>
         <div class="card-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#008080" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></div>
         <div class="card-name">TIKTOK</div>
-        <div class="card-count" id="dash-tt-count">0</div>
-        <div class="card-sub">動画 / <span id="dash-tt-posted">0</span> 投稿済み</div>
+        <div class="card-sub"><span id="dash-tt-posted">0</span>本 投稿済み</div>
       </div>
     </div>
 
@@ -873,10 +944,25 @@
         <div class="section-title" style="margin:0">
           <h2>📅 コンテンツカレンダー</h2>
         </div>
-        <div class="calendar-nav">
-          <button onclick="changeMonth(-1)">◀</button>
-          <div class="calendar-month" id="cal-month-label">2026年3月</div>
-          <button onclick="changeMonth(1)">▶</button>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="display:flex;gap:12px;font-size:11px;color:var(--text2);align-items:center">
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:rgba(251,146,60,0.3);border-left:2px solid #fb923c"></span>撮影日
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:flex;gap:2px">
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(255,0,0,0.3)"></span>
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(225,48,108,0.3)"></span>
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(180,180,180,0.25)"></span>
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(105,201,208,0.3)"></span>
+              </span>投稿日
+            </span>
+          </div>
+          <div class="calendar-nav">
+            <button onclick="changeMonth(-1)">◀</button>
+            <div class="calendar-month" id="cal-month-label">2026年3月</div>
+            <button onclick="changeMonth(1)">▶</button>
+          </div>
         </div>
       </div>
       <div class="calendar-grid" id="calendar-container"></div>
@@ -913,16 +999,11 @@
     <div class="toolbar">
       <button class="btn btn-yt" onclick="openModal('youtube')">＋ 動画を追加</button>
       <input class="search-box" placeholder="🔍 動画を検索..." oninput="renderTable('youtube')">
-      <select class="filter-select" onchange="renderTable('youtube')">
-        <option value="">全ての進捗</option>
-        <option value="idea">💭 アイデア</option>
-        <option value="planning">📝 企画中</option>
-        <option value="shooting">🎬 撮影中</option>
-        <option value="editing">✂️ 編集中</option>
-        <option value="review">👀 確認中</option>
-        <option value="done">✅ 完成</option>
-        <option value="posted">🚀 投稿済み</option>
-      </select>
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'youtube')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'youtube')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'youtube')">🚀 投稿済み</button>
+      </div>
     </div>
     <div class="content-table">
       <table>
@@ -934,7 +1015,6 @@
             <th>投稿予定日</th>
             <th>進捗</th>
             <th>担当</th>
-            <th>参考リンク</th>
             <th>メモ</th>
             <th></th>
           </tr>
@@ -954,22 +1034,16 @@
     <div class="toolbar">
       <button class="btn btn-ig" onclick="openModal('instagram')">＋ 投稿を追加</button>
       <input class="search-box" placeholder="🔍 投稿を検索..." oninput="renderTable('instagram')">
-      <select class="filter-select" onchange="renderTable('instagram')">
-        <option value="">全ての進捗</option>
-        <option value="idea">💭 アイデア</option>
-        <option value="planning">📝 企画中</option>
-        <option value="shooting">📸 撮影中</option>
-        <option value="editing">✂️ 編集中</option>
-        <option value="review">👀 確認中</option>
-        <option value="done">✅ 完成</option>
-        <option value="posted">🚀 投稿済み</option>
-      </select>
-      <select class="filter-select" onchange="renderTable('instagram')">
-        <option value="">全ての種類</option>
-        <option value="feed">フィード</option>
-        <option value="reel">リール</option>
-        <option value="story">ストーリー</option>
-      </select>
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'instagram')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'instagram')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'instagram')">🚀 投稿済み</button>
+      </div>
+      <div class="filter-pills" data-filter="type">
+        <button class="filter-pill" data-value="feed" onclick="toggleFilterPill(this,'instagram')">フィード</button>
+        <button class="filter-pill" data-value="reel" onclick="toggleFilterPill(this,'instagram')">リール</button>
+        <button class="filter-pill" data-value="story" onclick="toggleFilterPill(this,'instagram')">ストーリー</button>
+      </div>
     </div>
     <div class="content-table">
       <table>
@@ -1001,13 +1075,11 @@
     <div class="toolbar">
       <button class="btn btn-x" onclick="openModal('x')">＋ ポストを追加</button>
       <input class="search-box" placeholder="🔍 ポストを検索..." oninput="renderTable('x')">
-      <select class="filter-select" onchange="renderTable('x')">
-        <option value="">全ての進捗</option>
-        <option value="idea">💭 アイデア</option>
-        <option value="planning">📝 下書き</option>
-        <option value="review">👀 確認中</option>
-        <option value="posted">🚀 投稿済み</option>
-      </select>
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'x')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'x')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'x')">🚀 投稿済み</button>
+      </div>
     </div>
     <div class="content-table">
       <table>
@@ -1037,16 +1109,11 @@
     <div class="toolbar">
       <button class="btn btn-tt" onclick="openModal('tiktok')">＋ 動画を追加</button>
       <input class="search-box" placeholder="🔍 動画を検索..." oninput="renderTable('tiktok')">
-      <select class="filter-select" onchange="renderTable('tiktok')">
-        <option value="">全ての進捗</option>
-        <option value="idea">💭 アイデア</option>
-        <option value="planning">📝 企画中</option>
-        <option value="shooting">🎬 撮影中</option>
-        <option value="editing">✂️ 編集中</option>
-        <option value="review">👀 確認中</option>
-        <option value="done">✅ 完成</option>
-        <option value="posted">🚀 投稿済み</option>
-      </select>
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'tiktok')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'tiktok')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'tiktok')">🚀 投稿済み</button>
+      </div>
     </div>
     <div class="content-table">
       <table>
@@ -1075,20 +1142,18 @@
     </div>
     <div class="toolbar">
       <button class="btn btn-primary" onclick="openIdeaModal()">＋ アイデアを追加</button>
-      <select class="filter-select" id="idea-filter-platform" onchange="renderIdeas()">
-        <option value="">全プラットフォーム</option>
-        <option value="youtube">YouTube</option>
-        <option value="instagram">Instagram</option>
-        <option value="x">X (Twitter)</option>
-        <option value="tiktok">TikTok</option>
-        <option value="all">クロスプラットフォーム</option>
-      </select>
-      <select class="filter-select" id="idea-filter-priority" onchange="renderIdeas()">
-        <option value="">全優先度</option>
-        <option value="high">🔥 高</option>
-        <option value="mid">⭐ 中</option>
-        <option value="low">💤 低</option>
-      </select>
+      <div class="filter-pills" data-filter="platform">
+        <button class="filter-pill" data-value="youtube" onclick="toggleIdeaPill(this)">YouTube</button>
+        <button class="filter-pill" data-value="instagram" onclick="toggleIdeaPill(this)">Instagram</button>
+        <button class="filter-pill" data-value="x" onclick="toggleIdeaPill(this)">X</button>
+        <button class="filter-pill" data-value="tiktok" onclick="toggleIdeaPill(this)">TikTok</button>
+        <button class="filter-pill" data-value="all" onclick="toggleIdeaPill(this)">クロス</button>
+      </div>
+      <div class="filter-pills" data-filter="priority">
+        <button class="filter-pill" data-value="high" onclick="toggleIdeaPill(this)">🔥 高</button>
+        <button class="filter-pill" data-value="mid" onclick="toggleIdeaPill(this)">⭐ 中</button>
+        <button class="filter-pill" data-value="low" onclick="toggleIdeaPill(this)">💤 低</button>
+      </div>
     </div>
     <div class="idea-grid" id="idea-grid"></div>
   </div>
@@ -1211,7 +1276,11 @@
 const ROOT_KEY = 'enma_brands_v1';
 
 function emptyBrandData() {
-  return { youtube: [], instagram: [], x: [], tiktok: [], ideas: [], _nextId: 1 };
+  return {
+    youtube: [], instagram: [], x: [], tiktok: [], ideas: [], _nextId: 1,
+    _followers: { youtube: 0, instagram: 0, x: 0, tiktok: 0 },
+    _socialUrls: { youtube: '', instagram: '', x: '', tiktok: '' }
+  };
 }
 
 function loadRoot() {
@@ -1233,6 +1302,20 @@ function saveRoot() {
 function saveData() { saveRoot(); }
 
 let root = loadRoot();
+
+// 既存データへの移行 + ENMAブランドのURL初期設定
+Object.values(root.brandData).forEach(data => {
+  if (!data._followers) data._followers = { youtube: 0, instagram: 0, x: 0, tiktok: 0 };
+  if (!data._socialUrls) data._socialUrls = { youtube: '', instagram: '', x: '', tiktok: '' };
+});
+const _enmaData = root.brandData[1];
+if (_enmaData) {
+  if (!_enmaData._socialUrls.youtube) _enmaData._socialUrls.youtube = 'https://www.youtube.com/@enma_polish';
+  if (!_enmaData._socialUrls.instagram) _enmaData._socialUrls.instagram = 'https://www.instagram.com/enma_polish_jp/';
+  if (!_enmaData._socialUrls.x) _enmaData._socialUrls.x = 'https://x.com/ENMA_polish';
+}
+localStorage.setItem(ROOT_KEY, JSON.stringify(root));
+
 let db = root.brandData[root.currentBrandId];
 let calYear = 2026, calMonth = 3;
 
@@ -1259,17 +1342,21 @@ function renderPage(name) {
 // ステータス定義
 // =============================================
 const STATUS_LABELS = {
-  idea: '💭 アイデア', planning: '📝 企画中', shooting: '🎬 撮影中',
-  editing: '✂️ 編集中', review: '👀 確認中', done: '✅ 完成', posted: '🚀 投稿済み'
+  planning: '📝 企画中', editing: '✂️ 編集中', posted: '🚀 投稿済み'
 };
 
 const STATUS_CLASS = {
-  idea: 'status-idea', planning: 'status-planning', shooting: 'status-shooting',
-  editing: 'status-editing', review: 'status-review', done: 'status-done', posted: 'status-posted'
+  planning: 'status-planning', editing: 'status-editing', posted: 'status-posted'
 };
 
 const PLATFORM_COLORS = { youtube:'#ff0000', instagram:'#e1306c', x:'#aaaaaa', tiktok:'#69c9d0' };
 const PLATFORM_LABELS = { youtube:'▶️ YouTube', instagram:'📷 Instagram', x:'✖️ X', tiktok:'🎵 TikTok', all:'🌐 全体' };
+const PLATFORM_ICONS = {
+  youtube:  `<svg viewBox="0 0 24 24" fill="#ff4444" style="width:10px;height:10px;flex-shrink:0"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+  instagram:`<svg viewBox="0 0 24 24" style="width:10px;height:10px;flex-shrink:0"><defs><linearGradient id="ig-cal" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path fill="url(#ig-cal)" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg>`,
+  x:        `<svg viewBox="0 0 24 24" fill="#aaa" style="width:10px;height:10px;flex-shrink:0"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg>`,
+  tiktok:   `<svg viewBox="0 0 24 24" style="width:10px;height:10px;flex-shrink:0"><path fill="#69c9d0" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`,
+};
 
 // =============================================
 // ダッシュボード
@@ -1283,8 +1370,15 @@ function renderDashboard() {
     const posted = items.filter(i => i.status === 'posted').length;
     total += items.length;
     totalPosted += posted;
-    document.getElementById('dash-' + id + '-count').textContent = items.length;
     document.getElementById('dash-' + id + '-posted').textContent = posted;
+
+    // リンクボタンのスタイル更新
+    const linkBtn = document.getElementById('link-btn-' + (p === 'x' ? 'x' : p));
+    if (linkBtn) {
+      const hasUrl = db._socialUrls && db._socialUrls[p];
+      linkBtn.classList.toggle('unset', !hasUrl);
+      linkBtn.title = hasUrl ? p.charAt(0).toUpperCase() + p.slice(1) + 'を開く' : p.charAt(0).toUpperCase() + p.slice(1) + 'のURLを設定';
+    }
   });
 
   document.getElementById('total-content').textContent = total;
@@ -1326,6 +1420,37 @@ function renderDashboard() {
   renderCalendar();
 }
 
+function openSocialLink(platform) {
+  const url = db._socialUrls && db._socialUrls[platform];
+  if (url) {
+    window.open(url, '_blank');
+  } else {
+    const labels = { youtube: 'YouTube', instagram: 'Instagram', x: 'X (Twitter)', tiktok: 'TikTok' };
+    const newUrl = prompt(labels[platform] + ' のURLを入力してください：');
+    if (newUrl && newUrl.trim()) {
+      if (!db._socialUrls) db._socialUrls = { youtube: '', instagram: '', x: '', tiktok: '' };
+      db._socialUrls[platform] = newUrl.trim();
+      saveData();
+      renderDashboard();
+      window.open(newUrl.trim(), '_blank');
+    }
+  }
+}
+
+function editFollowers(platform) {
+  const labels = { youtube: 'チャンネル登録者数', instagram: 'Instagramフォロワー数', x: 'Xフォロワー数', tiktok: 'TikTokフォロワー数' };
+  const current = (db._followers && db._followers[platform]) || 0;
+  const val = prompt(labels[platform] + 'を入力してください（例：1500）：', current);
+  if (val === null) return;
+  const num = parseInt(val.replace(/[,，]/g, ''), 10);
+  if (!isNaN(num) && num >= 0) {
+    if (!db._followers) db._followers = { youtube: 0, instagram: 0, x: 0, tiktok: 0 };
+    db._followers[platform] = num;
+    saveData();
+    renderDashboard();
+  }
+}
+
 function getDateClass(date) {
   if (!date) return '';
   const today = new Date(); today.setHours(0,0,0,0);
@@ -1337,6 +1462,27 @@ function getDateClass(date) {
 }
 
 // =============================================
+// 日本の祝日
+// =============================================
+const JP_HOLIDAYS = {
+  // 2025年
+  '2025-01-01':'元日','2025-01-13':'成人の日','2025-02-11':'建国記念の日',
+  '2025-02-23':'天皇誕生日','2025-02-24':'天皇誕生日 振替','2025-03-20':'春分の日',
+  '2025-04-29':'昭和の日','2025-05-03':'憲法記念日','2025-05-04':'みどりの日',
+  '2025-05-05':'こどもの日','2025-05-06':'こどもの日 振替','2025-07-21':'海の日',
+  '2025-08-11':'山の日','2025-09-15':'敬老の日','2025-09-23':'秋分の日',
+  '2025-10-13':'スポーツの日','2025-11-03':'文化の日','2025-11-23':'勤労感謝の日',
+  '2025-11-24':'勤労感謝の日 振替',
+  // 2026年
+  '2026-01-01':'元日','2026-01-12':'成人の日','2026-02-11':'建国記念の日',
+  '2026-02-23':'天皇誕生日','2026-03-20':'春分の日','2026-04-29':'昭和の日',
+  '2026-05-03':'憲法記念日','2026-05-04':'みどりの日','2026-05-05':'こどもの日',
+  '2026-05-06':'こどもの日 振替','2026-07-20':'海の日','2026-08-11':'山の日',
+  '2026-09-21':'敬老の日','2026-09-22':'国民の休日','2026-09-23':'秋分の日',
+  '2026-10-12':'スポーツの日','2026-11-03':'文化の日','2026-11-23':'勤労感謝の日',
+};
+
+// =============================================
 // カレンダー
 // =============================================
 function renderCalendar() {
@@ -1346,9 +1492,13 @@ function renderCalendar() {
   const eventsMap = {};
   ['youtube','instagram','x','tiktok'].forEach(p => {
     db[p].forEach(item => {
+      if (item.shootDate) {
+        if (!eventsMap[item.shootDate]) eventsMap[item.shootDate] = [];
+        eventsMap[item.shootDate].push({ title: item.title, platform: p, type: 'shoot' });
+      }
       if (item.postDate) {
         if (!eventsMap[item.postDate]) eventsMap[item.postDate] = [];
-        eventsMap[item.postDate].push({ title: item.title, platform: p });
+        eventsMap[item.postDate].push({ title: item.title, platform: p, type: 'post' });
       }
     });
   });
@@ -1356,17 +1506,34 @@ function renderCalendar() {
   const firstDay = new Date(calYear, calMonth - 1, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth, 0).getDate();
   const todayStr = new Date().toISOString().split('T')[0];
-  const days = ['日','月','火','水','木','金','土'];
+  const dayHeaders = ['日','月','火','水','木','金','土'];
+  const headerClasses = ['sun','','','','','','sat'];
 
-  let html = days.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+  let html = dayHeaders.map((d, i) => `<div class="cal-day-header ${headerClasses[i]}">${d}</div>`).join('');
   for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = calYear + '-' + String(calMonth).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const dow = new Date(calYear, calMonth - 1, d).getDay();
+    const holidayName = JP_HOLIDAYS[dateStr];
     const isToday = dateStr === todayStr;
+    const isSun = dow === 0;
+    const isSat = dow === 6;
     const events = eventsMap[dateStr] || [];
-    html += `<div class="cal-day ${isToday ? 'today' : ''}">
+
+    const classes = [
+      'cal-day',
+      isToday ? 'today' : '',
+      isSun || holidayName ? 'sunday' : '',
+      isSat ? 'saturday' : '',
+      holidayName ? 'holiday holiday-label' : '',
+    ].filter(Boolean).join(' ');
+
+    html += `<div class="${classes}"${holidayName ? ` data-holiday="${holidayName}"` : ''}>
       <div class="cal-day-num">${d}</div>
-      ${events.slice(0,3).map(e => `<div class="cal-event ${e.platform}" title="${esc(e.title)}">${esc(e.title)}</div>`).join('')}
+      ${events.slice(0,3).map(e => e.type === 'shoot'
+        ? `<div class="cal-event shoot" title="撮影: ${esc(e.title)}">🎬<span style="overflow:hidden;text-overflow:ellipsis">${esc(e.title)}</span></div>`
+        : `<div class="cal-event ${e.platform}" title="投稿: ${esc(e.title)}">${PLATFORM_ICONS[e.platform]||''}<span style="overflow:hidden;text-overflow:ellipsis">${esc(e.title)}</span></div>`
+      ).join('')}
       ${events.length > 3 ? `<div style="font-size:10px;color:var(--text3)">+${events.length - 3}</div>` : ''}
     </div>`;
   }
@@ -1384,25 +1551,33 @@ function changeMonth(dir) {
 // =============================================
 // テーブル描画
 // =============================================
+function toggleFilterPill(btn, platform) {
+  btn.classList.toggle('active');
+  renderTable(platform);
+}
+
+function toggleIdeaPill(btn) {
+  btn.classList.toggle('active');
+  renderIdeas();
+}
+
 function renderTable(platform) {
   const pageEl = document.getElementById('page-' + platform);
   const search = pageEl.querySelector('.search-box')?.value?.toLowerCase() || '';
-  const selects = pageEl.querySelectorAll('.filter-select');
-  const statusFilter = selects[0]?.value || '';
-  const typeFilter = selects[1]?.value || '';
+
+  const statusFilters = Array.from(pageEl.querySelectorAll('.filter-pills[data-filter="status"] .filter-pill.active')).map(p => p.dataset.value);
+  const typeFilters   = Array.from(pageEl.querySelectorAll('.filter-pills[data-filter="type"] .filter-pill.active')).map(p => p.dataset.value);
 
   let items = db[platform].filter(item => {
     const matchSearch = !search || (item.title + ' ' + (item.memo||'')).toLowerCase().includes(search);
-    const matchStatus = !statusFilter || item.status === statusFilter;
-    const matchType = !typeFilter || item.type === typeFilter;
+    const matchStatus = statusFilters.length === 0 || statusFilters.includes(item.status);
+    const matchType   = typeFilters.length === 0   || typeFilters.includes(item.type);
     return matchSearch && matchStatus && matchType;
   });
 
   // 進捗サマリー
-  const allStatuses = platform === 'x'
-    ? ['idea','planning','review','posted']
-    : ['idea','planning','shooting','editing','review','done','posted'];
-  const statusLabels = { idea:'アイデア', planning:'企画中', shooting:'撮影中', editing:'編集中', review:'確認中', done:'完成', posted:'投稿済み' };
+  const allStatuses = ['planning','editing','posted'];
+  const statusLabels = { planning:'企画中', editing:'編集中', posted:'投稿済み' };
   const row = document.getElementById(platform.replace('tiktok','tt').replace('youtube','yt').replace('instagram','ig') + '-progress-row') || document.getElementById(platform + '-progress-row');
 
   const progressRowEl = document.getElementById(
@@ -1436,64 +1611,59 @@ function renderTable(platform) {
 
 function buildRow(item, num, platform) {
   const dc = getDateClass(item.postDate);
-  const links = (item.links || []).map(l => `<a href="${esc(l.url)}" target="_blank" class="link-chip">${esc(l.label||'参考')}</a>`).join('');
-  const statusBadge = `<span class="status-badge ${STATUS_CLASS[item.status]}" style="cursor:pointer" onclick="openStatusModal('${platform}',${item.id})" title="クリックで変更">${STATUS_LABELS[item.status] || item.status}</span>`;
+  const statusBadge = `<span class="status-badge ${STATUS_CLASS[item.status]}" style="cursor:pointer" onclick="event.stopPropagation();openStatusModal('${platform}',${item.id})" title="クリックで変更">${STATUS_LABELS[item.status] || item.status}</span>`;
+  const delBtn = `<td class="action-btns"><button class="icon-btn danger" onclick="event.stopPropagation();deleteContent('${platform}', ${item.id})">🗑️</button></td>`;
+  const rowClick = `onclick="editContent('${platform}', ${item.id})" title="クリックして編集"`;
 
-  const actionBtns = `<td class="action-btns">
-    <button class="icon-btn" onclick="editContent('${platform}', ${item.id})">✏️</button>
-    <button class="icon-btn danger" onclick="deleteContent('${platform}', ${item.id})">🗑️</button>
-  </td>`;
-
-  if (platform === 'youtube') return `<tr>
+  if (platform === 'youtube') return `<tr ${rowClick}>
     <td class="row-num">${num}</td>
-    <td class="content-title">${esc(item.title)}<small>${esc(item.subtitle||'')}</small></td>
+    <td class="content-title">${esc(item.title)}</td>
     <td class="date-cell">${item.shootDate||'―'}</td>
     <td class="date-cell ${dc}">${item.postDate||'―'}</td>
     <td>${statusBadge}</td>
     <td style="font-size:12px;color:var(--text2)">${esc(item.assignee||'―')}</td>
-    <td>${links||'―'}</td>
     <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
-    ${actionBtns}
+    ${delBtn}
   </tr>`;
 
   if (platform === 'instagram') {
     const typeL = { feed:'フィード', reel:'リール', story:'ストーリー' };
-    return `<tr>
+    return `<tr ${rowClick}>
       <td class="row-num">${num}</td>
-      <td class="content-title">${esc(item.title)}<small>${esc(item.subtitle||'')}</small></td>
+      <td class="content-title">${esc(item.title)}</td>
       <td><span class="badge">${typeL[item.type]||'―'}</span></td>
       <td class="date-cell">${item.shootDate||'―'}</td>
       <td class="date-cell ${dc}">${item.postDate||'―'}</td>
       <td>${statusBadge}</td>
       <td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc((item.hashtags||[]).join(' '))}</td>
       <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
-      ${actionBtns}
+      ${delBtn}
     </tr>`;
   }
 
   if (platform === 'x') {
     const xSL = { idea:'💭 アイデア', planning:'📝 下書き', review:'👀 確認中', posted:'🚀 投稿済み' };
-    const xBadge = `<span class="status-badge ${STATUS_CLASS[item.status]}" style="cursor:pointer" onclick="openStatusModal('x',${item.id})" title="クリックで変更">${xSL[item.status]||item.status}</span>`;
-    return `<tr>
+    const xBadge = `<span class="status-badge ${STATUS_CLASS[item.status]}" style="cursor:pointer" onclick="event.stopPropagation();openStatusModal('x',${item.id})" title="クリックで変更">${xSL[item.status]||item.status}</span>`;
+    return `<tr ${rowClick}>
       <td class="row-num">${num}</td>
-      <td class="content-title">${esc(item.title)}<small>${esc(item.subtitle||'')}</small></td>
+      <td class="content-title">${esc(item.title)}</td>
       <td><span class="badge">${esc(item.type||'テキスト')}</span></td>
       <td class="date-cell ${dc}">${item.postDate||'―'}</td>
       <td>${xBadge}</td>
       <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
-      ${actionBtns}
+      ${delBtn}
     </tr>`;
   }
 
-  if (platform === 'tiktok') return `<tr>
+  if (platform === 'tiktok') return `<tr ${rowClick}>
     <td class="row-num">${num}</td>
-    <td class="content-title">${esc(item.title)}<small>${esc(item.subtitle||'')}</small></td>
+    <td class="content-title">${esc(item.title)}</td>
     <td class="date-cell">${item.shootDate||'―'}</td>
     <td class="date-cell ${dc}">${item.postDate||'―'}</td>
     <td>${statusBadge}</td>
     <td style="font-size:12px;color:var(--text2)">${esc(item.bgm||'―')}</td>
     <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
-    ${actionBtns}
+    ${delBtn}
   </tr>`;
 }
 
@@ -1546,17 +1716,14 @@ function closeStatusModal() {
 const FORM_FIELDS = {
   youtube: [
     { id:'title', label:'動画タイトル / 内容', type:'text', placeholder:'例: ポリッシャー入門ガイド', full:true },
-    { id:'subtitle', label:'サブタイトル', type:'text', placeholder:'例: 初心者向け完全解説' },
     { id:'shootDate', label:'撮影日', type:'date' },
     { id:'postDate', label:'投稿予定日', type:'date' },
     { id:'status', label:'進捗', type:'select', options: Object.entries(STATUS_LABELS) },
     { id:'assignee', label:'担当者', type:'text', placeholder:'例: 大野' },
     { id:'memo', label:'メモ', type:'textarea', placeholder:'参考情報、注意事項など...', full:true },
-    { id:'links', label:'参考リンク (1行1URL)', type:'textarea', placeholder:'https://...', full:true },
   ],
   instagram: [
     { id:'title', label:'投稿タイトル / 内容', type:'text', placeholder:'例: ENMA ポリッシャー比較', full:true },
-    { id:'subtitle', label:'サブタイトル', type:'text', placeholder:'補足説明' },
     { id:'type', label:'投稿種類', type:'select', options:[['feed','フィード'],['reel','リール'],['story','ストーリー']] },
     { id:'shootDate', label:'撮影日', type:'date' },
     { id:'postDate', label:'投稿予定日', type:'date' },
@@ -1566,15 +1733,13 @@ const FORM_FIELDS = {
   ],
   x: [
     { id:'title', label:'ポスト内容', type:'textarea', placeholder:'ポストのテキスト (280文字)', full:true },
-    { id:'subtitle', label:'補足メモ', type:'text', placeholder:'補足説明' },
     { id:'type', label:'種類', type:'select', options:[['テキスト','テキスト'],['画像付き','画像付き'],['動画付き','動画付き'],['スレッド','スレッド']] },
     { id:'postDate', label:'投稿予定日', type:'date' },
-    { id:'status', label:'進捗', type:'select', options:[['idea','💭 アイデア'],['planning','📝 下書き'],['review','👀 確認中'],['posted','🚀 投稿済み']] },
+    { id:'status', label:'進捗', type:'select', options: Object.entries(STATUS_LABELS) },
     { id:'memo', label:'メモ', type:'textarea', placeholder:'補足メモ...', full:true },
   ],
   tiktok: [
     { id:'title', label:'動画タイトル / 内容', type:'text', placeholder:'例: ポリッシャーの使い方', full:true },
-    { id:'subtitle', label:'サブタイトル', type:'text', placeholder:'例: 60秒で分かる！' },
     { id:'shootDate', label:'撮影日', type:'date' },
     { id:'postDate', label:'投稿予定日', type:'date' },
     { id:'status', label:'進捗', type:'select', options: Object.entries(STATUS_LABELS) },
@@ -1608,14 +1773,13 @@ function openModal(platform, editId) {
     if (item) fields.forEach(f => {
       const el = document.getElementById('mf-' + f.id);
       if (!el) return;
-      if (f.id === 'links') el.value = (item.links||[]).map(l=>l.url).join('\n');
-      else if (f.id === 'hashtags') el.value = (item.hashtags||[]).join(' ');
+      if (f.id === 'hashtags') el.value = (item.hashtags||[]).join(' ');
       else el.value = item[f.id] || '';
     });
   } else {
     // デフォルト値
     const statusEl = document.getElementById('mf-status');
-    if (statusEl) statusEl.value = 'idea';
+    if (statusEl) statusEl.value = 'planning';
   }
 
   document.getElementById('content-modal').classList.add('open');
@@ -1634,8 +1798,7 @@ function saveContent() {
   fields.forEach(f => {
     const el = document.getElementById('mf-' + f.id);
     if (!el) return;
-    if (f.id === 'links') data.links = el.value.split('\n').filter(l=>l.trim()).map(u=>({url:u.trim(),label:'参考'}));
-    else if (f.id === 'hashtags') data.hashtags = el.value.split(/[\s\n]+/).filter(t=>t.trim());
+    if (f.id === 'hashtags') data.hashtags = el.value.split(/[\s\n]+/).filter(t=>t.trim());
     else data[f.id] = el.value;
   });
 
@@ -1721,11 +1884,13 @@ function saveIdea() {
 }
 
 function renderIdeas() {
-  const pf = document.getElementById('idea-filter-platform')?.value || '';
-  const pr = document.getElementById('idea-filter-priority')?.value || '';
+  const platformFilters = Array.from(document.querySelectorAll('#page-ideas .filter-pills[data-filter="platform"] .filter-pill.active')).map(p => p.dataset.value);
+  const priorityFilters = Array.from(document.querySelectorAll('#page-ideas .filter-pills[data-filter="priority"] .filter-pill.active')).map(p => p.dataset.value);
 
   let items = db.ideas.filter(i => {
-    return (!pf || i.platform === pf) && (!pr || i.priority === pr);
+    const matchP  = platformFilters.length === 0 || platformFilters.includes(i.platform);
+    const matchPr = priorityFilters.length === 0 || priorityFilters.includes(i.priority);
+    return matchP && matchPr;
   });
 
   document.getElementById('idea-count-badge').textContent = db.ideas.length + '件';
