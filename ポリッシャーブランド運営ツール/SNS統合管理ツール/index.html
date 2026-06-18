@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENMA Brand Manager</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --bg2: #ffffff;
+    --bg3: #f0f1f5;
+    --bg4: #e8e9ef;
+    --border: #e0e1e8;
+    --accent: #7c3aed;
+    --accent2: #6d28d9;
+    --accent-glow: rgba(124,58,237,0.15);
+    --yt: #cc0000;
+    --ig: #c13584;
+    --x: #000000;
+    --tt: #008080;
+    --text: #111827;
+    --text2: #4b5563;
+    --text3: #9ca3af;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Hiragino Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ヘッダー */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  .logo img {
+    height: 52px;
+    width: auto;
+    display: block;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 20px;
+  }
+
+  .stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .stat-chip span { color: var(--text); font-weight: 600; }
+
+  /* プラットフォームナビ */
+  .platform-nav {
+    display: flex;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    gap: 4px;
+    overflow-x: auto;
+  }
+
+  .platform-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px;
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .platform-tab:hover { color: var(--text2); }
+
+  .platform-tab.active-dashboard { color: var(--accent2); border-bottom-color: var(--accent2); }
+  .platform-tab.active-youtube { color: var(--yt); border-bottom-color: var(--yt); }
+  .platform-tab.active-instagram { color: var(--ig); border-bottom-color: var(--ig); }
+  .platform-tab.active-x { color: var(--x); border-bottom-color: var(--x); }
+  .platform-tab.active-tiktok { color: var(--tt); border-bottom-color: var(--tt); }
+  .platform-tab.active-ideas { color: var(--warning); border-bottom-color: var(--warning); }
+
+  .platform-icon { font-size: 16px; display:flex; align-items:center; }
+  .platform-icon svg { width:18px; height:18px; flex-shrink:0; }
+  .card-icon { margin-bottom: 12px; }
+  .card-icon svg { width:36px; height:36px; }
+
+  /* メインコンテンツ */
+  main {
+    flex: 1;
+    padding: 24px;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* セクションタイトル */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-title h2 {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .badge {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  /* ダッシュボード */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .platform-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .platform-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .platform-card.yt::before { background: var(--yt); }
+  .platform-card.ig::before { background: linear-gradient(90deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+  .platform-card.x::before { background: var(--x); }
+  .platform-card.tt::before { background: linear-gradient(90deg, var(--tt), #ee1d52); }
+
+  .platform-card:hover {
+    border-color: #3a3a4a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  .card-icon { margin-bottom: 12px; }
+  .card-name { font-size: 11px; color: var(--text2); font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; }
+  .card-count { font-size: 28px; font-weight: 800; }
+  .card-sub { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+  .yt .card-count { color: var(--yt); }
+  .ig .card-count { color: var(--ig); }
+  .x .card-count { color: #aaa; }
+  .tt .card-count { color: var(--tt); }
+
+  .card-count { cursor: pointer; }
+  .card-count:hover { opacity: 0.75; }
+
+  .card-link-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    z-index: 1;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .card-link-btn:hover { background: var(--bg4); color: var(--text); }
+  .card-link-btn.unset { color: var(--text3); border-style: dashed; }
+
+  /* コンテンツカレンダー */
+  .calendar-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .calendar-nav { display: flex; gap: 8px; align-items: center; }
+  .calendar-nav button {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .calendar-nav button:hover { background: var(--bg4); }
+
+  .calendar-month { font-size: 16px; font-weight: 700; min-width: 120px; text-align: center; }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .cal-day-header {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 600;
+    padding: 6px;
+  }
+  .cal-day-header.sun { color: #ef4444; }
+  .cal-day-header.sat { color: #3b82f6; }
+
+  .cal-day {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px;
+    min-height: 64px;
+    font-size: 12px;
+  }
+
+  .cal-day.empty { background: transparent; border-color: transparent; }
+  .cal-day.today { border-color: var(--accent); }
+  .cal-day.sunday  { background: rgba(239,68,68,0.07); }
+  .cal-day.saturday { background: rgba(59,130,246,0.07); }
+  .cal-day.holiday { background: rgba(239,68,68,0.07); }
+
+  .cal-day-num {
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .cal-day.today .cal-day-num { color: var(--accent2); }
+  .cal-day.sunday .cal-day-num  { color: #ef4444; }
+  .cal-day.saturday .cal-day-num { color: #3b82f6; }
+  .cal-day.holiday .cal-day-num { color: #ef4444; }
+  .cal-day.holiday-label::after {
+    content: attr(data-holiday);
+    display: block;
+    font-size: 9px;
+    color: #ef4444;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cal-event {
+    font-size: 10px;
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* 投稿日イベント */
+  .cal-event.yt { background: rgba(255,0,0,0.2); color: #ff6666; }
+  .cal-event.ig { background: rgba(225,48,108,0.2); color: #ff6699; }
+  .cal-event.x  { background: rgba(255,255,255,0.1); color: #cccccc; }
+  .cal-event.tt { background: rgba(105,201,208,0.2); color: var(--tt); }
+
+  /* 撮影日イベント（カメラアイコン付き・オレンジ系） */
+  .cal-event.shoot {
+    background: rgba(251,146,60,0.18);
+    color: #fb923c;
+    border-left: 2px solid #fb923c;
+  }
+
+  /* テーブル共通 */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--accent2); }
+
+  .btn-secondary {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-secondary:hover { background: var(--bg4); }
+
+  .btn-yt { background: rgba(255,0,0,0.15); border: 1px solid rgba(255,0,0,0.3); color: var(--yt); }
+  .btn-yt:hover { background: rgba(255,0,0,0.25); }
+  .btn-ig { background: rgba(225,48,108,0.15); border: 1px solid rgba(225,48,108,0.3); color: var(--ig); }
+  .btn-ig:hover { background: rgba(225,48,108,0.25); }
+  .btn-x { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: var(--x); }
+  .btn-x:hover { background: rgba(255,255,255,0.15); }
+  .btn-tt { background: rgba(105,201,208,0.15); border: 1px solid rgba(105,201,208,0.3); color: var(--tt); }
+  .btn-tt:hover { background: rgba(105,201,208,0.25); }
+
+  .search-box {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-size: 13px;
+    min-width: 200px;
+  }
+  .search-box:focus { outline: none; border-color: var(--accent); }
+
+  .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .filter-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .filter-pill:hover { border-color: var(--accent); color: var(--text); }
+  .filter-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .filter-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .filter-select:focus { outline: none; border-color: var(--accent); }
+
+  /* コンテンツテーブル */
+  .content-table {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: var(--bg3);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text2);
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover td { background: rgba(124,58,237,0.05); }
+
+  .row-num {
+    color: var(--text3);
+    font-size: 11px;
+    font-weight: 600;
+    width: 36px;
+  }
+
+  .content-title {
+    font-weight: 600;
+    max-width: 220px;
+  }
+
+  .content-title small {
+    display: block;
+    color: var(--text2);
+    font-weight: 400;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  /* 進捗バッジ */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .status-idea { background: rgba(100,100,150,0.2); color: #9090cc; border: 1px solid rgba(100,100,150,0.3); }
+  .status-planning { background: rgba(245,158,11,0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
+  .status-shooting { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+  .status-editing { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+  .status-review { background: rgba(234,179,8,0.15); color: #fbbf24; border: 1px solid rgba(234,179,8,0.3); }
+  .status-done { background: rgba(34,197,94,0.15); color: var(--success); border: 1px solid rgba(34,197,94,0.3); }
+  .status-posted { background: rgba(34,197,94,0.25); color: var(--success); border: 1px solid rgba(34,197,94,0.5); }
+
+  .date-cell { color: var(--text2); font-size: 12px; white-space: nowrap; }
+  .date-cell.overdue { color: var(--danger); }
+  .date-cell.soon { color: var(--warning); }
+
+  .memo-cell {
+    color: var(--text2);
+    font-size: 12px;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .action-btns { display: flex; gap: 6px; }
+
+  .icon-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { background: var(--bg4); color: var(--text); }
+  .icon-btn.danger:hover { background: rgba(239,68,68,0.15); color: var(--danger); border-color: rgba(239,68,68,0.3); }
+
+  /* リンクチップ */
+  .link-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .link-chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    color: var(--accent2);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .link-chip:hover { border-color: var(--accent); }
+
+  /* モーダル */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-title { font-size: 16px; font-weight: 700; }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+  }
+  .modal-close:hover { background: var(--bg3); color: var(--text); }
+
+  .modal-body { padding: 24px; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text2);
+    letter-spacing: 0.5px;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* アイデアボード */
+  .idea-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .idea-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+  }
+
+  .idea-card .platform-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  .idea-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .idea-platform { font-size: 11px; font-weight: 700; color: var(--text2); display: flex; align-items: center; }
+
+  .idea-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .idea-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .idea-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px; }
+
+  .tag {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  .idea-priority {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 16px;
+  }
+
+  /* 進捗サマリー */
+  .progress-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .progress-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .progress-num { font-size: 24px; font-weight: 800; }
+  .progress-label { font-size: 10px; color: var(--text2); margin-top: 4px; font-weight: 600; }
+
+  /* 空ステート */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text3);
+  }
+
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* トースト */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg3);
+    border: 1px solid var(--success);
+    color: var(--success);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 300;
+    transform: translateY(100px);
+    transition: transform 0.3s;
+  }
+
+  .toast.show { transform: translateY(0); }
+
+  /* status select非表示（バッジのみ表示、バッジクリックで変更） */
+  .status-select { display: none; }
+
+  /* ブランドスイッチャー */
+  .brand-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-dropdown {
+    position: relative;
+  }
+
+  .brand-current {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 140px;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .brand-current:hover { background: var(--bg4); }
+
+  .brand-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .brand-current-name { flex: 1; }
+  .brand-caret { color: var(--text3); font-size: 10px; }
+
+  .brand-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 200px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    z-index: 500;
+    overflow: hidden;
+  }
+  .brand-menu.open { display: block; }
+
+  .brand-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.1s;
+  }
+  .brand-menu-item:hover { background: var(--bg3); }
+  .brand-menu-item.active { background: var(--bg3); font-weight: 600; }
+
+  .brand-menu-item .brand-item-name { flex: 1; }
+
+  .brand-menu-item .brand-item-actions {
+    display: none;
+    gap: 4px;
+  }
+  .brand-menu-item:hover .brand-item-actions { display: flex; }
+
+  .brand-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: var(--text3);
+  }
+  .brand-action-btn:hover { background: var(--bg4); color: var(--text); }
+  .brand-action-btn.del:hover { color: var(--danger); }
+
+  .brand-menu-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  .brand-menu-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .brand-menu-add:hover { background: var(--bg3); }
+
+  /* ブランド追加/編集モーダル */
+  .color-picker-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.selected { border-color: var(--text); }
+
+  /* レスポンシブ */
+  @media (max-width: 900px) {
+    .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    .progress-row { grid-template-columns: repeat(3, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="logo.jpg" alt="ENMA"></div>
+
+  <!-- ブランドスイッチャー -->
+  <div class="brand-switcher">
+    <div class="brand-dropdown" id="brand-dropdown">
+      <div class="brand-current" onclick="toggleBrandMenu()">
+        <span class="brand-color-dot" id="brand-current-dot"></span>
+        <span class="brand-current-name" id="brand-current-name">読み込み中...</span>
+        <span class="brand-caret">▼</span>
+      </div>
+      <div class="brand-menu" id="brand-menu">
+        <div id="brand-menu-list"></div>
+        <div class="brand-menu-divider"></div>
+        <div class="brand-menu-add" onclick="openBrandModal()">＋ ブランドを追加</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="header-stats">
+    <div class="stat-chip">📅 <span id="today-date"></span></div>
+    <div class="stat-chip">📋 総コンテンツ: <span id="total-content">0</span></div>
+    <div class="stat-chip">🚀 投稿済み: <span id="posted-content">0</span></div>
+  </div>
+</header>
+
+<nav class="platform-nav">
+  <div class="platform-tab active-dashboard" onclick="showPage('dashboard', this)" data-page="dashboard">
+    <span class="platform-icon">🏠</span> ダッシュボード
+  </div>
+  <div class="platform-tab" onclick="showPage('youtube', this)" data-page="youtube">
+    <span class="platform-icon"><svg viewBox="0 0 24 24" fill="#ff0000" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span> YouTube
+  </div>
+  <div class="platform-tab" onclick="showPage('instagram', this)" data-page="instagram">
+    <span class="platform-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ig-nav" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="25%" style="stop-color:#e6683c"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="75%" style="stop-color:#cc2366"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path fill="url(#ig-nav)" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></span> Instagram
+  </div>
+  <div class="platform-tab" onclick="showPage('x', this)" data-page="x">
+    <span class="platform-icon"><svg viewBox="0 0 24 24" fill="#000000" xmlns="http://www.w3.org/2000/svg"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></span> X (Twitter)
+  </div>
+  <div class="platform-tab" onclick="showPage('tiktok', this)" data-page="tiktok">
+    <span class="platform-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#008080" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span> TikTok
+  </div>
+  <div class="platform-tab" onclick="showPage('ideas', this)" data-page="ideas">
+    <span class="platform-icon">💡</span> アイデアボード
+  </div>
+</nav>
+
+<main>
+
+  <!-- ダッシュボード -->
+  <div class="page active" id="page-dashboard">
+    <div class="section-title">
+      <h2 id="dashboard-brand-title">ブランドダッシュボード</h2>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="platform-card yt" onclick="showPage('youtube', document.querySelector('[data-page=youtube]'))">
+        <div class="card-link-btn" id="link-btn-youtube" onclick="event.stopPropagation(); openSocialLink('youtube')" title="YouTubeチャンネルを開く">↗</div>
+        <div class="card-icon"><svg viewBox="0 0 24 24" fill="#ff0000" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+        <div class="card-name">YOUTUBE</div>
+        <div class="card-sub"><span id="dash-yt-posted">0</span>本 投稿済み</div>
+      </div>
+      <div class="platform-card ig" onclick="showPage('instagram', document.querySelector('[data-page=instagram]'))">
+        <div class="card-link-btn" id="link-btn-instagram" onclick="event.stopPropagation(); openSocialLink('instagram')" title="Instagramを開く">↗</div>
+        <div class="card-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ig-card" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="25%" style="stop-color:#e6683c"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="75%" style="stop-color:#cc2366"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path fill="url(#ig-card)" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></div>
+        <div class="card-name">INSTAGRAM</div>
+        <div class="card-sub"><span id="dash-ig-posted">0</span>件 投稿済み</div>
+      </div>
+      <div class="platform-card x" onclick="showPage('x', document.querySelector('[data-page=x]'))">
+        <div class="card-link-btn" id="link-btn-x" onclick="event.stopPropagation(); openSocialLink('x')" title="Xを開く">↗</div>
+        <div class="card-icon"><svg viewBox="0 0 24 24" fill="#000000" xmlns="http://www.w3.org/2000/svg"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg></div>
+        <div class="card-name">X (TWITTER)</div>
+        <div class="card-sub"><span id="dash-x-posted">0</span>件 投稿済み</div>
+      </div>
+      <div class="platform-card tt" onclick="showPage('tiktok', document.querySelector('[data-page=tiktok]'))">
+        <div class="card-link-btn unset" id="link-btn-tiktok" onclick="event.stopPropagation(); openSocialLink('tiktok')" title="TikTokを開く（未設定）">↗</div>
+        <div class="card-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#008080" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></div>
+        <div class="card-name">TIKTOK</div>
+        <div class="card-sub"><span id="dash-tt-posted">0</span>本 投稿済み</div>
+      </div>
+    </div>
+
+    <!-- カレンダー -->
+    <div class="calendar-section">
+      <div class="calendar-header">
+        <div class="section-title" style="margin:0">
+          <h2>📅 コンテンツカレンダー</h2>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <div style="display:flex;gap:12px;font-size:11px;color:var(--text2);align-items:center">
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:rgba(251,146,60,0.3);border-left:2px solid #fb923c"></span>撮影日
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:flex;gap:2px">
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(255,0,0,0.3)"></span>
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(225,48,108,0.3)"></span>
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(180,180,180,0.25)"></span>
+                <span style="display:inline-block;width:8px;height:12px;border-radius:2px;background:rgba(105,201,208,0.3)"></span>
+              </span>投稿日
+            </span>
+          </div>
+          <div class="calendar-nav">
+            <button onclick="changeMonth(-1)">◀</button>
+            <div class="calendar-month" id="cal-month-label">2026年3月</div>
+            <button onclick="changeMonth(1)">▶</button>
+          </div>
+        </div>
+      </div>
+      <div class="calendar-grid" id="calendar-container"></div>
+    </div>
+
+    <!-- 直近の投稿予定 -->
+    <div class="content-table">
+      <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+        <h3 style="font-size:15px">🔔 直近の投稿予定・進行中</h3>
+        <span class="badge" id="upcoming-count">0件</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>プラットフォーム</th>
+            <th>コンテンツ</th>
+            <th>投稿予定日</th>
+            <th>進捗</th>
+            <th>担当</th>
+          </tr>
+        </thead>
+        <tbody id="upcoming-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- YouTube -->
+  <div class="page" id="page-youtube">
+    <div class="section-title">
+      <h2 style="color:var(--yt);display:flex;align-items:center;gap:8px"><svg width="22" height="22" viewBox="0 0 24 24" fill="#ff0000" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> YouTube 管理</h2>
+      <div class="badge" id="yt-count-badge">0本</div>
+    </div>
+    <div class="progress-row" id="yt-progress-row"></div>
+    <div class="toolbar">
+      <button class="btn btn-yt" onclick="openModal('youtube')">＋ 動画を追加</button>
+      <input class="search-box" placeholder="🔍 動画を検索..." oninput="renderTable('youtube')">
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'youtube')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'youtube')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'youtube')">🚀 投稿済み</button>
+      </div>
+    </div>
+    <div class="content-table">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>動画タイトル / 内容</th>
+            <th>撮影日</th>
+            <th>投稿予定日</th>
+            <th>進捗</th>
+            <th>担当</th>
+            <th>メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="youtube-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Instagram -->
+  <div class="page" id="page-instagram">
+    <div class="section-title">
+      <h2 style="display:flex;align-items:center;gap:8px"><svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ig-h2" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path fill="url(#ig-h2)" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg> <span style="background:linear-gradient(135deg,#f09433,#dc2743,#bc1888);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Instagram 管理</span></h2>
+      <div class="badge" id="ig-count-badge">0件</div>
+    </div>
+    <div class="progress-row" id="ig-progress-row"></div>
+    <div class="toolbar">
+      <button class="btn btn-ig" onclick="openModal('instagram')">＋ 投稿を追加</button>
+      <input class="search-box" placeholder="🔍 投稿を検索..." oninput="renderTable('instagram')">
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'instagram')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'instagram')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'instagram')">🚀 投稿済み</button>
+      </div>
+      <div class="filter-pills" data-filter="type">
+        <button class="filter-pill" data-value="feed" onclick="toggleFilterPill(this,'instagram')">フィード</button>
+        <button class="filter-pill" data-value="reel" onclick="toggleFilterPill(this,'instagram')">リール</button>
+        <button class="filter-pill" data-value="story" onclick="toggleFilterPill(this,'instagram')">ストーリー</button>
+      </div>
+    </div>
+    <div class="content-table">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>投稿内容</th>
+            <th>種類</th>
+            <th>撮影日</th>
+            <th>投稿予定日</th>
+            <th>進捗</th>
+            <th>ハッシュタグ</th>
+            <th>メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="instagram-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- X -->
+  <div class="page" id="page-x">
+    <div class="section-title">
+      <h2 style="display:flex;align-items:center;gap:8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="#000000" xmlns="http://www.w3.org/2000/svg"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg> X (Twitter) 管理</h2>
+      <div class="badge" id="x-count-badge">0件</div>
+    </div>
+    <div class="progress-row" id="x-progress-row"></div>
+    <div class="toolbar">
+      <button class="btn btn-x" onclick="openModal('x')">＋ ポストを追加</button>
+      <input class="search-box" placeholder="🔍 ポストを検索..." oninput="renderTable('x')">
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'x')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'x')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'x')">🚀 投稿済み</button>
+      </div>
+    </div>
+    <div class="content-table">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>投稿内容</th>
+            <th>種類</th>
+            <th>投稿予定日</th>
+            <th>進捗</th>
+            <th>メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="x-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TikTok -->
+  <div class="page" id="page-tiktok">
+    <div class="section-title">
+      <h2 style="color:var(--tt);display:flex;align-items:center;gap:8px"><svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#008080" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg> TikTok 管理</h2>
+      <div class="badge" id="tt-count-badge">0件</div>
+    </div>
+    <div class="progress-row" id="tt-progress-row"></div>
+    <div class="toolbar">
+      <button class="btn btn-tt" onclick="openModal('tiktok')">＋ 動画を追加</button>
+      <input class="search-box" placeholder="🔍 動画を検索..." oninput="renderTable('tiktok')">
+      <div class="filter-pills" data-filter="status">
+        <button class="filter-pill" data-value="planning" onclick="toggleFilterPill(this,'tiktok')">📝 企画中</button>
+        <button class="filter-pill" data-value="editing" onclick="toggleFilterPill(this,'tiktok')">✂️ 編集中</button>
+        <button class="filter-pill" data-value="posted" onclick="toggleFilterPill(this,'tiktok')">🚀 投稿済み</button>
+      </div>
+    </div>
+    <div class="content-table">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>動画タイトル / 内容</th>
+            <th>撮影日</th>
+            <th>投稿予定日</th>
+            <th>進捗</th>
+            <th>BGM / 音源</th>
+            <th>メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tiktok-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- アイデアボード -->
+  <div class="page" id="page-ideas">
+    <div class="section-title">
+      <h2 style="color:var(--warning)">💡 アイデアボード</h2>
+      <div class="badge" id="idea-count-badge">0件</div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="openIdeaModal()">＋ アイデアを追加</button>
+      <div class="filter-pills" data-filter="platform">
+        <button class="filter-pill" data-value="youtube" onclick="toggleIdeaPill(this)">YouTube</button>
+        <button class="filter-pill" data-value="instagram" onclick="toggleIdeaPill(this)">Instagram</button>
+        <button class="filter-pill" data-value="x" onclick="toggleIdeaPill(this)">X</button>
+        <button class="filter-pill" data-value="tiktok" onclick="toggleIdeaPill(this)">TikTok</button>
+        <button class="filter-pill" data-value="all" onclick="toggleIdeaPill(this)">クロス</button>
+      </div>
+      <div class="filter-pills" data-filter="priority">
+        <button class="filter-pill" data-value="high" onclick="toggleIdeaPill(this)">🔥 高</button>
+        <button class="filter-pill" data-value="mid" onclick="toggleIdeaPill(this)">⭐ 中</button>
+        <button class="filter-pill" data-value="low" onclick="toggleIdeaPill(this)">💤 低</button>
+      </div>
+    </div>
+    <div class="idea-grid" id="idea-grid"></div>
+  </div>
+
+</main>
+
+<!-- コンテンツ追加モーダル -->
+<div class="modal-overlay" id="content-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">コンテンツを追加</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modal-platform">
+      <input type="hidden" id="modal-edit-id">
+      <div class="form-grid" id="modal-form-grid"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveContent()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- アイデアモーダル -->
+<div class="modal-overlay" id="idea-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💡 アイデアを追加</div>
+      <button class="modal-close" onclick="closeIdeaModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="idea-edit-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">プラットフォーム</label>
+          <select class="form-select" id="idea-platform">
+            <option value="youtube">YouTube</option>
+            <option value="instagram">Instagram</option>
+            <option value="x">X (Twitter)</option>
+            <option value="tiktok">TikTok</option>
+            <option value="all">クロスプラットフォーム</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">優先度</label>
+          <select class="form-select" id="idea-priority">
+            <option value="high">🔥 高</option>
+            <option value="mid">⭐ 中</option>
+            <option value="low">💤 低</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">アイデアタイトル</label>
+          <input class="form-input" id="idea-title" placeholder="例: ポリッシャーの基礎知識シリーズ">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">詳細・メモ</label>
+          <textarea class="form-textarea" id="idea-desc" placeholder="アイデアの詳細、参考、実現方法など..."></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">タグ (カンマ区切り)</label>
+          <input class="form-input" id="idea-tags" placeholder="例: 初心者向け, 教育, シリーズ">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeIdeaModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveIdea()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 進捗変更モーダル -->
+<div class="modal-overlay" id="status-modal">
+  <div class="modal" style="max-width:320px">
+    <div class="modal-header">
+      <div class="modal-title">進捗を変更</div>
+      <button class="modal-close" onclick="closeStatusModal()">✕</button>
+    </div>
+    <div class="modal-body" id="status-modal-body"></div>
+  </div>
+</div>
+
+<!-- ブランド追加/編集モーダル -->
+<div class="modal-overlay" id="brand-modal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title" id="brand-modal-title">ブランドを追加</div>
+      <button class="modal-close" onclick="closeBrandModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="brand-edit-id">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">ブランド名</label>
+          <input class="form-input" id="brand-name" placeholder="例: APEX, BOLT, NEXUS...">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">カラー</label>
+          <div class="color-picker-row" id="brand-color-picker"></div>
+          <input class="form-input" id="brand-color-custom" type="color" style="margin-top:8px;width:100%;height:36px;padding:2px 4px;cursor:pointer" title="カスタムカラー">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeBrandModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveBrand()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// マルチブランドデータ管理
+// =============================================
+const ROOT_KEY = 'enma_brands_v1';
+
+function emptyBrandData() {
+  return {
+    youtube: [], instagram: [], x: [], tiktok: [], ideas: [], _nextId: 1,
+    _followers: { youtube: 0, instagram: 0, x: 0, tiktok: 0 },
+    _socialUrls: { youtube: '', instagram: '', x: '', tiktok: '' }
+  };
+}
+
+function loadRoot() {
+  const raw = localStorage.getItem(ROOT_KEY);
+  if (raw) return JSON.parse(raw);
+  // 初回: ENMAブランドを作成
+  return {
+    brands: [{ id: 1, name: 'ENMA', color: '#111827' }],
+    currentBrandId: 1,
+    brandData: { 1: emptyBrandData() },
+    _brandNextId: 2
+  };
+}
+
+function saveRoot() {
+  localStorage.setItem(ROOT_KEY, JSON.stringify(root));
+}
+
+function saveData() { saveRoot(); }
+
+let root = loadRoot();
+
+// 既存データへの移行 + ENMAブランドのURL初期設定
+Object.values(root.brandData).forEach(data => {
+  if (!data._followers) data._followers = { youtube: 0, instagram: 0, x: 0, tiktok: 0 };
+  if (!data._socialUrls) data._socialUrls = { youtube: '', instagram: '', x: '', tiktok: '' };
+});
+const _enmaData = root.brandData[1];
+if (_enmaData) {
+  if (!_enmaData._socialUrls.youtube) _enmaData._socialUrls.youtube = 'https://www.youtube.com/@enma_polish';
+  if (!_enmaData._socialUrls.instagram) _enmaData._socialUrls.instagram = 'https://www.instagram.com/enma_polish_jp/';
+  if (!_enmaData._socialUrls.x) _enmaData._socialUrls.x = 'https://x.com/ENMA_polish';
+}
+localStorage.setItem(ROOT_KEY, JSON.stringify(root));
+
+let db = root.brandData[root.currentBrandId];
+let calYear = 2026, calMonth = 3;
+
+// =============================================
+// ページ切り替え
+// =============================================
+function showPage(name, tabEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.platform-tab').forEach(t => {
+    t.className = 'platform-tab';
+  });
+  document.getElementById('page-' + name).classList.add('active');
+  if (tabEl) tabEl.className = 'platform-tab active-' + name;
+  renderPage(name);
+}
+
+function renderPage(name) {
+  if (name === 'dashboard') renderDashboard();
+  else if (['youtube','instagram','x','tiktok'].includes(name)) renderTable(name);
+  else if (name === 'ideas') renderIdeas();
+}
+
+// =============================================
+// ステータス定義
+// =============================================
+const STATUS_LABELS = {
+  planning: '📝 企画中', editing: '✂️ 編集中', posted: '🚀 投稿済み'
+};
+
+const STATUS_CLASS = {
+  planning: 'status-planning', editing: 'status-editing', posted: 'status-posted'
+};
+
+const PLATFORM_COLORS = { youtube:'#ff0000', instagram:'#e1306c', x:'#aaaaaa', tiktok:'#69c9d0' };
+const PLATFORM_LABELS = { youtube:'▶️ YouTube', instagram:'📷 Instagram', x:'✖️ X', tiktok:'🎵 TikTok', all:'🌐 全体' };
+const PLATFORM_ICONS = {
+  youtube:  `<svg viewBox="0 0 24 24" fill="#ff4444" style="width:10px;height:10px;flex-shrink:0"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
+  instagram:`<svg viewBox="0 0 24 24" style="width:10px;height:10px;flex-shrink:0"><defs><linearGradient id="ig-cal" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><path fill="url(#ig-cal)" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg>`,
+  x:        `<svg viewBox="0 0 24 24" fill="#aaa" style="width:10px;height:10px;flex-shrink:0"><path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/></svg>`,
+  tiktok:   `<svg viewBox="0 0 24 24" style="width:10px;height:10px;flex-shrink:0"><path fill="#69c9d0" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`,
+};
+
+// =============================================
+// ダッシュボード
+// =============================================
+function renderDashboard() {
+  const pMap = { youtube:'yt', instagram:'ig', x:'x', tiktok:'tt' };
+  let total = 0, totalPosted = 0;
+
+  Object.entries(pMap).forEach(([p, id]) => {
+    const items = db[p];
+    const posted = items.filter(i => i.status === 'posted').length;
+    total += items.length;
+    totalPosted += posted;
+    document.getElementById('dash-' + id + '-posted').textContent = posted;
+
+    // リンクボタンのスタイル更新
+    const linkBtn = document.getElementById('link-btn-' + (p === 'x' ? 'x' : p));
+    if (linkBtn) {
+      const hasUrl = db._socialUrls && db._socialUrls[p];
+      linkBtn.classList.toggle('unset', !hasUrl);
+      linkBtn.title = hasUrl ? p.charAt(0).toUpperCase() + p.slice(1) + 'を開く' : p.charAt(0).toUpperCase() + p.slice(1) + 'のURLを設定';
+    }
+  });
+
+  document.getElementById('total-content').textContent = total;
+  document.getElementById('posted-content').textContent = totalPosted;
+
+  // 直近予定
+  const upcoming = [];
+  ['youtube','instagram','x','tiktok'].forEach(p => {
+    db[p].forEach(item => {
+      if (item.status !== 'posted') upcoming.push({ ...item, _platform: p });
+    });
+  });
+  upcoming.sort((a, b) => {
+    if (!a.postDate && !b.postDate) return 0;
+    if (!a.postDate) return 1;
+    if (!b.postDate) return -1;
+    return a.postDate.localeCompare(b.postDate);
+  });
+
+  const tbody = document.getElementById('upcoming-tbody');
+  const shown = upcoming.slice(0, 10);
+  document.getElementById('upcoming-count').textContent = shown.length + '件';
+
+  if (shown.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📭</div><p>進行中のコンテンツがありません</p></div></td></tr>';
+  } else {
+    tbody.innerHTML = shown.map(item => {
+      const dc = getDateClass(item.postDate);
+      return `<tr>
+        <td><span style="color:${PLATFORM_COLORS[item._platform]};font-weight:700;font-size:12px">${PLATFORM_LABELS[item._platform]}</span></td>
+        <td class="content-title">${esc(item.title)}</td>
+        <td class="date-cell ${dc}">${item.postDate || '―'}</td>
+        <td><span class="status-badge ${STATUS_CLASS[item.status]}">${STATUS_LABELS[item.status]}</span></td>
+        <td style="font-size:12px;color:var(--text2)">${esc(item.assignee || '―')}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderCalendar();
+}
+
+function openSocialLink(platform) {
+  const url = db._socialUrls && db._socialUrls[platform];
+  if (url) {
+    window.open(url, '_blank');
+  } else {
+    const labels = { youtube: 'YouTube', instagram: 'Instagram', x: 'X (Twitter)', tiktok: 'TikTok' };
+    const newUrl = prompt(labels[platform] + ' のURLを入力してください：');
+    if (newUrl && newUrl.trim()) {
+      if (!db._socialUrls) db._socialUrls = { youtube: '', instagram: '', x: '', tiktok: '' };
+      db._socialUrls[platform] = newUrl.trim();
+      saveData();
+      renderDashboard();
+      window.open(newUrl.trim(), '_blank');
+    }
+  }
+}
+
+function editFollowers(platform) {
+  const labels = { youtube: 'チャンネル登録者数', instagram: 'Instagramフォロワー数', x: 'Xフォロワー数', tiktok: 'TikTokフォロワー数' };
+  const current = (db._followers && db._followers[platform]) || 0;
+  const val = prompt(labels[platform] + 'を入力してください（例：1500）：', current);
+  if (val === null) return;
+  const num = parseInt(val.replace(/[,，]/g, ''), 10);
+  if (!isNaN(num) && num >= 0) {
+    if (!db._followers) db._followers = { youtube: 0, instagram: 0, x: 0, tiktok: 0 };
+    db._followers[platform] = num;
+    saveData();
+    renderDashboard();
+  }
+}
+
+function getDateClass(date) {
+  if (!date) return '';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(date);
+  const diff = (d - today) / 86400000;
+  if (diff < 0) return 'overdue';
+  if (diff <= 3) return 'soon';
+  return '';
+}
+
+// =============================================
+// 日本の祝日
+// =============================================
+const JP_HOLIDAYS = {
+  // 2025年
+  '2025-01-01':'元日','2025-01-13':'成人の日','2025-02-11':'建国記念の日',
+  '2025-02-23':'天皇誕生日','2025-02-24':'天皇誕生日 振替','2025-03-20':'春分の日',
+  '2025-04-29':'昭和の日','2025-05-03':'憲法記念日','2025-05-04':'みどりの日',
+  '2025-05-05':'こどもの日','2025-05-06':'こどもの日 振替','2025-07-21':'海の日',
+  '2025-08-11':'山の日','2025-09-15':'敬老の日','2025-09-23':'秋分の日',
+  '2025-10-13':'スポーツの日','2025-11-03':'文化の日','2025-11-23':'勤労感謝の日',
+  '2025-11-24':'勤労感謝の日 振替',
+  // 2026年
+  '2026-01-01':'元日','2026-01-12':'成人の日','2026-02-11':'建国記念の日',
+  '2026-02-23':'天皇誕生日','2026-03-20':'春分の日','2026-04-29':'昭和の日',
+  '2026-05-03':'憲法記念日','2026-05-04':'みどりの日','2026-05-05':'こどもの日',
+  '2026-05-06':'こどもの日 振替','2026-07-20':'海の日','2026-08-11':'山の日',
+  '2026-09-21':'敬老の日','2026-09-22':'国民の休日','2026-09-23':'秋分の日',
+  '2026-10-12':'スポーツの日','2026-11-03':'文化の日','2026-11-23':'勤労感謝の日',
+};
+
+// =============================================
+// カレンダー
+// =============================================
+function renderCalendar() {
+  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('cal-month-label').textContent = calYear + '年' + monthNames[calMonth - 1];
+
+  const eventsMap = {};
+  ['youtube','instagram','x','tiktok'].forEach(p => {
+    db[p].forEach(item => {
+      if (item.shootDate) {
+        if (!eventsMap[item.shootDate]) eventsMap[item.shootDate] = [];
+        eventsMap[item.shootDate].push({ title: item.title, platform: p, type: 'shoot' });
+      }
+      if (item.postDate) {
+        if (!eventsMap[item.postDate]) eventsMap[item.postDate] = [];
+        eventsMap[item.postDate].push({ title: item.title, platform: p, type: 'post' });
+      }
+    });
+  });
+
+  const firstDay = new Date(calYear, calMonth - 1, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth, 0).getDate();
+  const todayStr = new Date().toISOString().split('T')[0];
+  const dayHeaders = ['日','月','火','水','木','金','土'];
+  const headerClasses = ['sun','','','','','','sat'];
+
+  let html = dayHeaders.map((d, i) => `<div class="cal-day-header ${headerClasses[i]}">${d}</div>`).join('');
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = calYear + '-' + String(calMonth).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const dow = new Date(calYear, calMonth - 1, d).getDay();
+    const holidayName = JP_HOLIDAYS[dateStr];
+    const isToday = dateStr === todayStr;
+    const isSun = dow === 0;
+    const isSat = dow === 6;
+    const events = eventsMap[dateStr] || [];
+
+    const classes = [
+      'cal-day',
+      isToday ? 'today' : '',
+      isSun || holidayName ? 'sunday' : '',
+      isSat ? 'saturday' : '',
+      holidayName ? 'holiday holiday-label' : '',
+    ].filter(Boolean).join(' ');
+
+    html += `<div class="${classes}"${holidayName ? ` data-holiday="${holidayName}"` : ''}>
+      <div class="cal-day-num">${d}</div>
+      ${events.slice(0,3).map(e => e.type === 'shoot'
+        ? `<div class="cal-event shoot" title="撮影: ${esc(e.title)}">🎬<span style="overflow:hidden;text-overflow:ellipsis">${esc(e.title)}</span></div>`
+        : `<div class="cal-event ${e.platform}" title="投稿: ${esc(e.title)}">${PLATFORM_ICONS[e.platform]||''}<span style="overflow:hidden;text-overflow:ellipsis">${esc(e.title)}</span></div>`
+      ).join('')}
+      ${events.length > 3 ? `<div style="font-size:10px;color:var(--text3)">+${events.length - 3}</div>` : ''}
+    </div>`;
+  }
+
+  document.getElementById('calendar-container').innerHTML = html;
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 12) { calMonth = 1; calYear++; }
+  if (calMonth < 1) { calMonth = 12; calYear--; }
+  renderCalendar();
+}
+
+// =============================================
+// テーブル描画
+// =============================================
+function toggleFilterPill(btn, platform) {
+  btn.classList.toggle('active');
+  renderTable(platform);
+}
+
+function toggleIdeaPill(btn) {
+  btn.classList.toggle('active');
+  renderIdeas();
+}
+
+function renderTable(platform) {
+  const pageEl = document.getElementById('page-' + platform);
+  const search = pageEl.querySelector('.search-box')?.value?.toLowerCase() || '';
+
+  const statusFilters = Array.from(pageEl.querySelectorAll('.filter-pills[data-filter="status"] .filter-pill.active')).map(p => p.dataset.value);
+  const typeFilters   = Array.from(pageEl.querySelectorAll('.filter-pills[data-filter="type"] .filter-pill.active')).map(p => p.dataset.value);
+
+  let items = db[platform].filter(item => {
+    const matchSearch = !search || (item.title + ' ' + (item.memo||'')).toLowerCase().includes(search);
+    const matchStatus = statusFilters.length === 0 || statusFilters.includes(item.status);
+    const matchType   = typeFilters.length === 0   || typeFilters.includes(item.type);
+    return matchSearch && matchStatus && matchType;
+  });
+
+  // 進捗サマリー
+  const allStatuses = ['planning','editing','posted'];
+  const statusLabels = { planning:'企画中', editing:'編集中', posted:'投稿済み' };
+  const row = document.getElementById(platform.replace('tiktok','tt').replace('youtube','yt').replace('instagram','ig') + '-progress-row') || document.getElementById(platform + '-progress-row');
+
+  const progressRowEl = document.getElementById(
+    platform === 'youtube' ? 'yt-progress-row' :
+    platform === 'instagram' ? 'ig-progress-row' :
+    platform === 'tiktok' ? 'tt-progress-row' : 'x-progress-row'
+  );
+  if (progressRowEl) {
+    progressRowEl.style.gridTemplateColumns = `repeat(${allStatuses.length}, 1fr)`;
+    progressRowEl.innerHTML = allStatuses.map(s => {
+      const count = db[platform].filter(i => i.status === s).length;
+      return `<div class="progress-item">
+        <div class="progress-num" style="color:${count > 0 ? 'var(--text)' : 'var(--text3)'}">${count}</div>
+        <div class="progress-label">${statusLabels[s]}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const badgeId = platform === 'youtube' ? 'yt' : platform === 'instagram' ? 'ig' : platform === 'tiktok' ? 'tt' : 'x';
+  document.getElementById(badgeId + '-count-badge').textContent = db[platform].length + '件';
+
+  const tbody = document.getElementById(platform + '-tbody');
+  if (items.length === 0) {
+    const icons = { youtube:'▶️', instagram:'📷', x:'✖️', tiktok:'🎵' };
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">${icons[platform]}</div><p>コンテンツがありません</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = items.map((item, idx) => buildRow(item, idx + 1, platform)).join('');
+}
+
+function buildRow(item, num, platform) {
+  const dc = getDateClass(item.postDate);
+  const statusBadge = `<span class="status-badge ${STATUS_CLASS[item.status]}" style="cursor:pointer" onclick="event.stopPropagation();openStatusModal('${platform}',${item.id})" title="クリックで変更">${STATUS_LABELS[item.status] || item.status}</span>`;
+  const delBtn = `<td class="action-btns"><button class="icon-btn danger" onclick="event.stopPropagation();deleteContent('${platform}', ${item.id})">🗑️</button></td>`;
+  const rowClick = `onclick="editContent('${platform}', ${item.id})" title="クリックして編集"`;
+
+  if (platform === 'youtube') return `<tr ${rowClick}>
+    <td class="row-num">${num}</td>
+    <td class="content-title">${esc(item.title)}</td>
+    <td class="date-cell">${item.shootDate||'―'}</td>
+    <td class="date-cell ${dc}">${item.postDate||'―'}</td>
+    <td>${statusBadge}</td>
+    <td style="font-size:12px;color:var(--text2)">${esc(item.assignee||'―')}</td>
+    <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
+    ${delBtn}
+  </tr>`;
+
+  if (platform === 'instagram') {
+    const typeL = { feed:'フィード', reel:'リール', story:'ストーリー' };
+    return `<tr ${rowClick}>
+      <td class="row-num">${num}</td>
+      <td class="content-title">${esc(item.title)}</td>
+      <td><span class="badge">${typeL[item.type]||'―'}</span></td>
+      <td class="date-cell">${item.shootDate||'―'}</td>
+      <td class="date-cell ${dc}">${item.postDate||'―'}</td>
+      <td>${statusBadge}</td>
+      <td style="font-size:11px;color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc((item.hashtags||[]).join(' '))}</td>
+      <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
+      ${delBtn}
+    </tr>`;
+  }
+
+  if (platform === 'x') {
+    const xSL = { idea:'💭 アイデア', planning:'📝 下書き', review:'👀 確認中', posted:'🚀 投稿済み' };
+    const xBadge = `<span class="status-badge ${STATUS_CLASS[item.status]}" style="cursor:pointer" onclick="event.stopPropagation();openStatusModal('x',${item.id})" title="クリックで変更">${xSL[item.status]||item.status}</span>`;
+    return `<tr ${rowClick}>
+      <td class="row-num">${num}</td>
+      <td class="content-title">${esc(item.title)}</td>
+      <td><span class="badge">${esc(item.type||'テキスト')}</span></td>
+      <td class="date-cell ${dc}">${item.postDate||'―'}</td>
+      <td>${xBadge}</td>
+      <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
+      ${delBtn}
+    </tr>`;
+  }
+
+  if (platform === 'tiktok') return `<tr ${rowClick}>
+    <td class="row-num">${num}</td>
+    <td class="content-title">${esc(item.title)}</td>
+    <td class="date-cell">${item.shootDate||'―'}</td>
+    <td class="date-cell ${dc}">${item.postDate||'―'}</td>
+    <td>${statusBadge}</td>
+    <td style="font-size:12px;color:var(--text2)">${esc(item.bgm||'―')}</td>
+    <td class="memo-cell" title="${esc(item.memo||'')}">${esc(item.memo||'―')}</td>
+    ${delBtn}
+  </tr>`;
+}
+
+// =============================================
+// 進捗クイック変更
+// =============================================
+let statusModalPlatform = '', statusModalId = 0;
+
+function openStatusModal(platform, id) {
+  statusModalPlatform = platform;
+  statusModalId = id;
+  const item = db[platform].find(i => i.id === id);
+  if (!item) return;
+
+  const statuses = platform === 'x'
+    ? [['idea','💭 アイデア'],['planning','📝 下書き'],['review','👀 確認中'],['posted','🚀 投稿済み']]
+    : Object.entries(STATUS_LABELS);
+
+  document.getElementById('status-modal-body').innerHTML = `
+    <div style="padding:8px 0">
+      ${statuses.map(([k,v]) => `
+        <div onclick="setStatus('${k}')" style="padding:12px 16px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:10px;${item.status===k?'background:var(--bg3)':''}">
+          <span class="status-badge ${STATUS_CLASS[k]}">${v}</span>
+          ${item.status===k ? '<span style="margin-left:auto;color:var(--accent2)">✓ 現在</span>' : ''}
+        </div>
+      `).join('')}
+    </div>`;
+
+  document.getElementById('status-modal').classList.add('open');
+}
+
+function setStatus(status) {
+  const item = db[statusModalPlatform].find(i => i.id === statusModalId);
+  if (item) {
+    item.status = status;
+    saveData();
+    renderTable(statusModalPlatform);
+    showToast('進捗を「' + (STATUS_LABELS[status]||status) + '」に変更しました');
+  }
+  closeStatusModal();
+}
+
+function closeStatusModal() {
+  document.getElementById('status-modal').classList.remove('open');
+}
+
+// =============================================
+// フォーム定義
+// =============================================
+const FORM_FIELDS = {
+  youtube: [
+    { id:'title', label:'動画タイトル / 内容', type:'text', placeholder:'例: ポリッシャー入門ガイド', full:true },
+    { id:'shootDate', label:'撮影日', type:'date' },
+    { id:'postDate', label:'投稿予定日', type:'date' },
+    { id:'status', label:'進捗', type:'select', options: Object.entries(STATUS_LABELS) },
+    { id:'assignee', label:'担当者', type:'text', placeholder:'例: 大野' },
+    { id:'memo', label:'メモ', type:'textarea', placeholder:'参考情報、注意事項など...', full:true },
+  ],
+  instagram: [
+    { id:'title', label:'投稿タイトル / 内容', type:'text', placeholder:'例: ENMA ポリッシャー比較', full:true },
+    { id:'type', label:'投稿種類', type:'select', options:[['feed','フィード'],['reel','リール'],['story','ストーリー']] },
+    { id:'shootDate', label:'撮影日', type:'date' },
+    { id:'postDate', label:'投稿予定日', type:'date' },
+    { id:'status', label:'進捗', type:'select', options: Object.entries(STATUS_LABELS) },
+    { id:'hashtags', label:'ハッシュタグ (スペース or 改行区切り)', type:'textarea', placeholder:'#ENMA #ポリッシャー #カーケア', full:true },
+    { id:'memo', label:'メモ / キャプション案', type:'textarea', placeholder:'キャプション案、参考など...', full:true },
+  ],
+  x: [
+    { id:'title', label:'ポスト内容', type:'textarea', placeholder:'ポストのテキスト (280文字)', full:true },
+    { id:'type', label:'種類', type:'select', options:[['テキスト','テキスト'],['画像付き','画像付き'],['動画付き','動画付き'],['スレッド','スレッド']] },
+    { id:'postDate', label:'投稿予定日', type:'date' },
+    { id:'status', label:'進捗', type:'select', options: Object.entries(STATUS_LABELS) },
+    { id:'memo', label:'メモ', type:'textarea', placeholder:'補足メモ...', full:true },
+  ],
+  tiktok: [
+    { id:'title', label:'動画タイトル / 内容', type:'text', placeholder:'例: ポリッシャーの使い方', full:true },
+    { id:'shootDate', label:'撮影日', type:'date' },
+    { id:'postDate', label:'投稿予定日', type:'date' },
+    { id:'status', label:'進捗', type:'select', options: Object.entries(STATUS_LABELS) },
+    { id:'bgm', label:'BGM / 音源', type:'text', placeholder:'例: ENMA BGM01' },
+    { id:'memo', label:'メモ', type:'textarea', placeholder:'参考動画、トレンド音源など...', full:true },
+  ]
+};
+
+// =============================================
+// モーダル
+// =============================================
+function openModal(platform, editId) {
+  const titles = { youtube:'▶️ YouTube 動画を追加', instagram:'📷 Instagram 投稿を追加', x:'✖️ X ポストを追加', tiktok:'🎵 TikTok 動画を追加' };
+  document.getElementById('modal-title').textContent = editId ? 'コンテンツを編集' : titles[platform];
+  document.getElementById('modal-platform').value = platform;
+  document.getElementById('modal-edit-id').value = editId || '';
+
+  const fields = FORM_FIELDS[platform];
+  document.getElementById('modal-form-grid').innerHTML = fields.map(f => {
+    const cls = f.full ? ' full' : '';
+    let inp = '';
+    if (f.type === 'text') inp = `<input class="form-input" id="mf-${f.id}" placeholder="${f.placeholder||''}">`;
+    else if (f.type === 'date') inp = `<input class="form-input" id="mf-${f.id}" type="date">`;
+    else if (f.type === 'textarea') inp = `<textarea class="form-textarea" id="mf-${f.id}" placeholder="${f.placeholder||''}"></textarea>`;
+    else if (f.type === 'select') inp = `<select class="form-select" id="mf-${f.id}">${f.options.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>`;
+    return `<div class="form-group${cls}"><label class="form-label">${f.label}</label>${inp}</div>`;
+  }).join('');
+
+  if (editId) {
+    const item = db[platform].find(i => i.id === editId);
+    if (item) fields.forEach(f => {
+      const el = document.getElementById('mf-' + f.id);
+      if (!el) return;
+      if (f.id === 'hashtags') el.value = (item.hashtags||[]).join(' ');
+      else el.value = item[f.id] || '';
+    });
+  } else {
+    // デフォルト値
+    const statusEl = document.getElementById('mf-status');
+    if (statusEl) statusEl.value = 'planning';
+  }
+
+  document.getElementById('content-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('content-modal').classList.remove('open');
+}
+
+function saveContent() {
+  const platform = document.getElementById('modal-platform').value;
+  const editId = document.getElementById('modal-edit-id').value;
+  const fields = FORM_FIELDS[platform];
+
+  const data = {};
+  fields.forEach(f => {
+    const el = document.getElementById('mf-' + f.id);
+    if (!el) return;
+    if (f.id === 'hashtags') data.hashtags = el.value.split(/[\s\n]+/).filter(t=>t.trim());
+    else data[f.id] = el.value;
+  });
+
+  if (!data.title || !data.title.trim()) { alert('タイトルを入力してください'); return; }
+
+  if (editId) {
+    const idx = db[platform].findIndex(i => i.id === parseInt(editId));
+    if (idx !== -1) db[platform][idx] = { ...db[platform][idx], ...data };
+    showToast('更新しました');
+  } else {
+    data.id = db._nextId++;
+    data.createdAt = new Date().toISOString();
+    db[platform].push(data);
+    showToast('コンテンツを追加しました');
+  }
+
+  saveData();
+  closeModal();
+  renderTable(platform);
+}
+
+function editContent(platform, id) { openModal(platform, id); }
+
+function deleteContent(platform, id) {
+  if (!confirm('このコンテンツを削除しますか？')) return;
+  db[platform] = db[platform].filter(i => i.id !== id);
+  saveData();
+  renderTable(platform);
+  showToast('削除しました');
+}
+
+// =============================================
+// アイデアボード
+// =============================================
+function openIdeaModal(editId) {
+  document.getElementById('idea-edit-id').value = editId || '';
+  if (editId) {
+    const item = db.ideas.find(i => i.id === editId);
+    if (item) {
+      document.getElementById('idea-platform').value = item.platform || 'youtube';
+      document.getElementById('idea-priority').value = item.priority || 'mid';
+      document.getElementById('idea-title').value = item.title || '';
+      document.getElementById('idea-desc').value = item.desc || '';
+      document.getElementById('idea-tags').value = (item.tags||[]).join(', ');
+    }
+  } else {
+    ['idea-title','idea-desc','idea-tags'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('idea-priority').value = 'mid';
+  }
+  document.getElementById('idea-modal').classList.add('open');
+}
+
+function closeIdeaModal() {
+  document.getElementById('idea-modal').classList.remove('open');
+}
+
+function saveIdea() {
+  const editId = document.getElementById('idea-edit-id').value;
+  const data = {
+    platform: document.getElementById('idea-platform').value,
+    priority: document.getElementById('idea-priority').value,
+    title: document.getElementById('idea-title').value,
+    desc: document.getElementById('idea-desc').value,
+    tags: document.getElementById('idea-tags').value.split(',').map(t=>t.trim()).filter(t=>t),
+  };
+
+  if (!data.title.trim()) { alert('タイトルを入力してください'); return; }
+
+  if (editId) {
+    const idx = db.ideas.findIndex(i => i.id === parseInt(editId));
+    if (idx !== -1) db.ideas[idx] = { ...db.ideas[idx], ...data };
+    showToast('アイデアを更新しました');
+  } else {
+    data.id = db._nextId++;
+    data.createdAt = new Date().toISOString();
+    db.ideas.push(data);
+    showToast('アイデアを追加しました');
+  }
+
+  saveData();
+  closeIdeaModal();
+  renderIdeas();
+}
+
+function renderIdeas() {
+  const platformFilters = Array.from(document.querySelectorAll('#page-ideas .filter-pills[data-filter="platform"] .filter-pill.active')).map(p => p.dataset.value);
+  const priorityFilters = Array.from(document.querySelectorAll('#page-ideas .filter-pills[data-filter="priority"] .filter-pill.active')).map(p => p.dataset.value);
+
+  let items = db.ideas.filter(i => {
+    const matchP  = platformFilters.length === 0 || platformFilters.includes(i.platform);
+    const matchPr = priorityFilters.length === 0 || priorityFilters.includes(i.priority);
+    return matchP && matchPr;
+  });
+
+  document.getElementById('idea-count-badge').textContent = db.ideas.length + '件';
+
+  const grid = document.getElementById('idea-grid');
+  if (items.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">💡</div><p>アイデアがありません</p></div>';
+    return;
+  }
+
+  const priorityIcon = { high:'🔥', mid:'⭐', low:'💤' };
+  const dotColor = { youtube:'#ff0000', instagram:'#e1306c', x:'#ffffff', tiktok:'#69c9d0', all:'#7c3aed' };
+
+  grid.innerHTML = items.map(item => `
+    <div class="idea-card">
+      <div class="idea-priority">${priorityIcon[item.priority]||'⭐'}</div>
+      <div class="idea-header">
+        <div class="idea-platform">
+          <span class="platform-dot" style="background:${dotColor[item.platform]||'#888'}"></span>
+          ${PLATFORM_LABELS[item.platform]||item.platform}
+        </div>
+      </div>
+      <div class="idea-title">${esc(item.title)}</div>
+      <div class="idea-desc">${esc(item.desc||'')}</div>
+      <div class="idea-tags">${(item.tags||[]).map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>
+      <div class="action-btns" style="margin-top:12px">
+        <button class="icon-btn" onclick="openIdeaModal(${item.id})">✏️ 編集</button>
+        <button class="icon-btn" onclick="promoteIdea(${item.id})" title="コンテンツとして追加">🚀 コンテンツ化</button>
+        <button class="icon-btn danger" onclick="deleteIdea(${item.id})">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteIdea(id) {
+  if (!confirm('このアイデアを削除しますか？')) return;
+  db.ideas = db.ideas.filter(i => i.id !== id);
+  saveData();
+  renderIdeas();
+  showToast('削除しました');
+}
+
+function promoteIdea(id) {
+  const idea = db.ideas.find(i => i.id === id);
+  if (!idea) return;
+  const platform = idea.platform === 'all' ? 'youtube' : idea.platform;
+  openModal(platform);
+  setTimeout(() => {
+    const titleEl = document.getElementById('mf-title');
+    const memoEl = document.getElementById('mf-memo');
+    if (titleEl) titleEl.value = idea.title;
+    if (memoEl) memoEl.value = idea.desc || '';
+  }, 50);
+  showToast('アイデアをコンテンツ化しました');
+}
+
+// =============================================
+// ユーティリティ
+// =============================================
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✅ ' + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// =============================================
+// ブランド管理
+// =============================================
+const BRAND_COLORS = [
+  '#111827','#1d4ed8','#7c3aed','#be185d','#b45309',
+  '#047857','#0e7490','#c2410c','#374151','#6d28d9'
+];
+
+function switchBrand(brandId) {
+  root.currentBrandId = brandId;
+  db = root.brandData[brandId];
+  saveRoot();
+  renderBrandSwitcher();
+  closeBrandMenu();
+  // ダッシュボードにリセット
+  showPage('dashboard', document.querySelector('[data-page=dashboard]'));
+  document.querySelectorAll('.platform-tab').forEach(t => t.className = 'platform-tab');
+  document.querySelector('[data-page=dashboard]').className = 'platform-tab active-dashboard';
+}
+
+function renderBrandSwitcher() {
+  const brand = root.brands.find(b => b.id === root.currentBrandId);
+  if (!brand) return;
+
+  document.getElementById('brand-current-dot').style.background = brand.color;
+  document.getElementById('brand-current-name').textContent = brand.name;
+  document.getElementById('dashboard-brand-title').textContent = brand.name + ' ダッシュボード';
+  document.title = brand.name + ' Brand Manager';
+
+  const list = document.getElementById('brand-menu-list');
+  list.innerHTML = root.brands.map(b => `
+    <div class="brand-menu-item ${b.id === root.currentBrandId ? 'active' : ''}" onclick="switchBrand(${b.id})">
+      <span class="brand-color-dot" style="background:${b.color}"></span>
+      <span class="brand-item-name">${esc(b.name)}</span>
+      <span class="brand-item-actions">
+        <button class="brand-action-btn" onclick="event.stopPropagation();openBrandModal(${b.id})" title="編集">✏️</button>
+        ${root.brands.length > 1 ? `<button class="brand-action-btn del" onclick="event.stopPropagation();deleteBrand(${b.id})" title="削除">🗑️</button>` : ''}
+      </span>
+    </div>
+  `).join('');
+}
+
+function toggleBrandMenu() {
+  document.getElementById('brand-menu').classList.toggle('open');
+}
+
+function closeBrandMenu() {
+  document.getElementById('brand-menu').classList.remove('open');
+}
+
+// ブランドモーダル
+let selectedBrandColor = BRAND_COLORS[0];
+
+function openBrandModal(editId) {
+  document.getElementById('brand-edit-id').value = editId || '';
+  document.getElementById('brand-modal-title').textContent = editId ? 'ブランドを編集' : 'ブランドを追加';
+
+  // カラースウォッチ生成
+  const picker = document.getElementById('brand-color-picker');
+  picker.innerHTML = BRAND_COLORS.map(c => `
+    <div class="color-swatch ${c === selectedBrandColor ? 'selected' : ''}"
+      style="background:${c}"
+      onclick="selectBrandColor('${c}')"
+      title="${c}"></div>
+  `).join('');
+
+  if (editId) {
+    const brand = root.brands.find(b => b.id === editId);
+    if (brand) {
+      document.getElementById('brand-name').value = brand.name;
+      selectBrandColor(brand.color);
+      document.getElementById('brand-color-custom').value = brand.color;
+    }
+  } else {
+    document.getElementById('brand-name').value = '';
+    selectBrandColor(BRAND_COLORS[0]);
+  }
+
+  closeBrandMenu();
+  document.getElementById('brand-modal').classList.add('open');
+}
+
+function closeBrandModal() {
+  document.getElementById('brand-modal').classList.remove('open');
+}
+
+function selectBrandColor(color) {
+  selectedBrandColor = color;
+  document.querySelectorAll('.color-swatch').forEach(s => {
+    s.classList.toggle('selected', s.style.background === color || s.style.backgroundColor === color);
+  });
+  document.getElementById('brand-color-custom').value = color;
+}
+
+function saveBrand() {
+  const name = document.getElementById('brand-name').value.trim();
+  const color = document.getElementById('brand-color-custom').value || selectedBrandColor;
+  const editId = document.getElementById('brand-edit-id').value;
+
+  if (!name) { alert('ブランド名を入力してください'); return; }
+
+  if (editId) {
+    const brand = root.brands.find(b => b.id === parseInt(editId));
+    if (brand) { brand.name = name; brand.color = color; }
+    showToast('ブランドを更新しました');
+  } else {
+    const newId = root._brandNextId++;
+    root.brands.push({ id: newId, name, color });
+    root.brandData[newId] = emptyBrandData();
+    showToast(name + ' を追加しました');
+  }
+
+  saveRoot();
+  renderBrandSwitcher();
+  renderDashboard();
+  closeBrandModal();
+}
+
+function deleteBrand(id) {
+  const brand = root.brands.find(b => b.id === id);
+  if (!brand) return;
+  if (!confirm(`「${brand.name}」を削除しますか？\nこのブランドの全データが失われます。`)) return;
+
+  root.brands = root.brands.filter(b => b.id !== id);
+  delete root.brandData[id];
+
+  // 削除したブランドが現在のブランドだった場合、最初のブランドに切り替え
+  if (root.currentBrandId === id) {
+    root.currentBrandId = root.brands[0].id;
+    db = root.brandData[root.currentBrandId];
+  }
+
+  saveRoot();
+  renderBrandSwitcher();
+  renderDashboard();
+  showToast('削除しました');
+}
+
+// =============================================
+// 初期化
+// =============================================
+function init() {
+  const today = new Date();
+  document.getElementById('today-date').textContent =
+    today.getFullYear() + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + String(today.getDate()).padStart(2,'0');
+  calYear = today.getFullYear();
+  calMonth = today.getMonth() + 1;
+
+  // サンプルデータ（ENMAブランド初回のみ）
+  if (db.youtube.length === 0 && root.brands.length === 1) {
+    const nid = () => db._nextId++;
+    db.youtube = [
+      { id:nid(), title:'紹介', subtitle:'ENMAブランド紹介動画', shootDate:'2026-03-05', postDate:'2026-03-15', status:'editing', assignee:'大野', memo:'ある程度こだわって作り込む 3/13までには作りたい', links:[{url:'https://www.scania.com/jp/ja/home.html',label:'雰囲気参考'}] },
+      { id:nid(), title:'ポリッシャーとは', subtitle:'基礎知識解説', shootDate:'', postDate:'2026-03-17', status:'planning', assignee:'', memo:'ポリッシャーについてしっかり調べる', links:[] },
+      { id:nid(), title:'開梱動画', subtitle:'', shootDate:'', postDate:'', status:'idea', assignee:'', memo:'後世の基礎として', links:[] },
+      { id:nid(), title:'コンパウンド', subtitle:'', shootDate:'', postDate:'', status:'idea', assignee:'', memo:'', links:[] },
+      { id:nid(), title:'バフ', subtitle:'', shootDate:'', postDate:'', status:'idea', assignee:'', memo:'', links:[] },
+      { id:nid(), title:'本体', subtitle:'', shootDate:'', postDate:'', status:'idea', assignee:'', memo:'', links:[] },
+      { id:nid(), title:'下準備', subtitle:'', shootDate:'', postDate:'', status:'idea', assignee:'', memo:'', links:[] },
+      { id:nid(), title:'施工動画', subtitle:'', shootDate:'', postDate:'', status:'idea', assignee:'', memo:'', links:[] },
+    ];
+    db.ideas = [
+      { id:nid(), platform:'youtube', priority:'high', title:'ペルソナ: ポリッシャー初心者向けシリーズ', desc:'ポリッシャーを使ったことが無い初心者向け。①ポリッシャーの基本 ②種類 ③何ができるか？ の順で展開', tags:['初心者','教育','シリーズ'] },
+      { id:nid(), platform:'all', priority:'mid', title:'オープニング動画の参考を集める', desc:'動画は5分前後を意識。オープニング参考動画を各SNSでリサーチする', tags:['オープニング','参考','ブランディング'] },
+      { id:nid(), platform:'instagram', priority:'mid', title:'ポリッシャー施工 Before/After', desc:'施工前後の写真を並べてインパクトを出す。リールが効果的', tags:['Before/After','リール','バズ'] },
+      { id:nid(), platform:'tiktok', priority:'high', title:'60秒で分かるポリッシャー入門', desc:'TikTokのトレンド音源に合わせて手短に解説。バズ狙いの短尺コンテンツ', tags:['短尺','バズ','初心者'] },
+      { id:nid(), platform:'x', priority:'low', title:'施工完了報告ツイート', desc:'施工完了後に写真付きでツイート。フォロワーとのコミュニケーション', tags:['報告','コミュニティ'] },
+    ];
+    saveRoot();
+  }
+
+  // カラーピッカー変更時にselectBrandColorを呼ぶ
+  document.getElementById('brand-color-custom').addEventListener('input', function() {
+    selectBrandColor(this.value);
+  });
+
+  // ブランドメニュー外クリックで閉じる
+  document.addEventListener('click', e => {
+    const dd = document.getElementById('brand-dropdown');
+    if (!dd.contains(e.target)) closeBrandMenu();
+  });
+
+  renderBrandSwitcher();
+  renderDashboard();
+
+  // Escキーでモーダルを閉じる
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeIdeaModal(); closeStatusModal(); closeBrandModal(); closeBrandMenu(); }
+  });
+  document.getElementById('content-modal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+  document.getElementById('idea-modal').addEventListener('click', function(e) { if(e.target===this) closeIdeaModal(); });
+  document.getElementById('status-modal').addEventListener('click', function(e) { if(e.target===this) closeStatusModal(); });
+  document.getElementById('brand-modal').addEventListener('click', function(e) { if(e.target===this) closeBrandModal(); });
+}
+
+init();
+</script>
+</body>
+</html>
